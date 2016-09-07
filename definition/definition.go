@@ -13,6 +13,7 @@ type AppDefinition struct {
 	AppId                     string `yaml:"app_id"`
 	Group                     string
 	Category                  string
+	Priority                  int32
 	AppType                   AppType `yaml:"app_type"`
 	Name                      string
 	Description               string
