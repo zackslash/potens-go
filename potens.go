@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
+	"math/rand"
 	"net"
 	"strconv"
 	"time"
@@ -20,7 +21,7 @@ import (
 
 var (
 	hostname            string
-	port                = flag.Int("service-port", 50051, "grpc service port")
+	port                = flag.Int("service-port", 0, "grpc service port")
 	discoveryService    = flag.String("discovery-service", "discovery.fortifi.me:50056", "Fortifi App Discovery Service")
 	discoveryConn       *grpc.ClientConn
 	discoClient         discovery.DiscoveryClient
@@ -156,7 +157,15 @@ func getCerts() error {
 
 func CreateServer() (net.Listener, *grpc.Server, error) {
 
-	lis, err := net.Listen("tcp", hostname+":"+strconv.FormatInt(int64(*port), 10))
+	usePort := *port
+	if usePort == 0 {
+		minPort := 50060
+		maxPort := 55555
+		rand.Seed(time.Now().UTC().UnixNano())
+		usePort = rand.Intn(maxPort-minPort) + minPort
+	}
+
+	lis, err := net.Listen("tcp", hostname+":"+strconv.FormatInt(int64(usePort), 10))
 	if err != nil {
 		return nil, nil, err
 	}
