@@ -1,0 +1,264 @@
+##########################
+# SAMPLE DEFINITION FILE #
+##########################
+
+type: fortifi.platform.application
+config_version: 1.0
+
+#######################
+#    Required Info    #
+#######################
+
+#The version of your application
+version: 1.0
+
+#Your vendor ID
+vendor: fortifi-uk
+
+#ID of your app
+app_id: fortifi-uk/customers
+
+#The group this app belongs to (used for micro apps)
+group:
+
+#Category to place this app in
+category: crm
+
+#Priority of this app (0-1000) - see docs on how to configure priority
+priority: 500
+
+#App Type (employee, publisher, customer, domain.feature
+app_type: employee
+
+#######################
+# Display Information #
+#######################
+
+#Display name for your app
+name: Customers
+
+#Description of the app, shown with the app in menus and summaries
+description: Management of base customer information
+
+#fort-icon value, can be material:<material design icon name>, iron:<iron icon name>, or an svg
+icon: material:3d_rotation
+
+#######################
+#     Navigation      #
+#######################
+navigation:
+  - id: list-customers
+    # Menu Item Text
+    name: List Customers
+    # Menu Item Help Text (e.g. Tooltip, Sub Header)
+    description: Show all your customers
+    #fort-icon value, can be material:<material design icon name>, iron:<iron icon name>, or an svg
+    icon: material:3d_rotation
+    #Path to follow (relative to your application)
+    path: customers/
+    #Restrict this menu item to specific roles, leave blank to remove restrictions
+    roles:
+      - //customer-manager
+      - administrator
+
+#######################
+# Entity Information  #
+#######################
+
+entities:
+  #Key for your app
+  app_key: CU
+
+  #Your Vendor Key
+  vendor_key: FRT
+
+  #Type (2 Char) - Unique Type for this application
+  CS:
+    #Name of the entity
+    name: Customer
+    #Plural version of the entity
+    plural: Customers
+    #Description of the entity
+    description: Purpose of this entity type
+    #Place {fid} for fid replacement within path
+    #(optional)Relative path within your app to handle the view of this entity
+    path: /view/{fid}
+    #(optional)Path to retrieve hovercard data (slow hovercard urls may be disabled automatically)
+    hovercard: /hover/{fid}
+
+#######################
+#    Event Listener   #
+#######################
+
+listener:
+  #set to false to stop receiving organisation events
+  enabled: true
+
+  #Location to push events to (pubsub/sqs/http)
+  repository: http
+
+  #Configuration for your repository (see docs)
+  config:
+    - name: url
+      value: http://events.yourdomain.com/fortifi
+
+#######################
+#    Quick Actions    #
+#######################
+
+quick_actions:
+    #Unique ID (unique to your app)
+  - id: create-customer
+    #Display name - Will be the only text visible for this action
+    name: Create a Customer
+    #Icon to display
+    icon: material:person add
+    #Launch style (page, dialog, window)
+    mode: dialog
+    #Path to complete this action (window mode must be a full uri, page and dialog are relative to your app path)
+    path: customers/create
+    #Restrict this action to specific roles, leave blank to remove restrictions
+    roles:
+      - //customer-manager
+      - administrator
+
+#######################
+#   Search  Actions   #
+#######################
+
+search_actions:
+    #Unique ID (unique to your app)
+  - id: new-customers
+    #Display name
+    name: New Customers
+    #Description to show with the search result
+    description: Display the most recently joined customers
+    #Icon to display
+    icon: material:group add
+    #Path to complete this action relative to your app path
+    path: customers/list-new
+    #Keywords one per line
+    tokens:
+      - new
+      - customers
+      - recent
+      - joined
+    #Restrict this action to specific roles, leave blank to remove restrictions
+    roles:
+      - //customer-manager
+      - administrator
+
+#######################
+#       Queues        #
+#######################
+
+queues:
+    #Unique ID (unique to your app)
+  - id: pending-customers
+    #Display name
+    name: Pending Customers
+    #Icon to display
+    icon: material:person outline
+    #Path to the handler for this queue
+    path: customers/pending/queue
+    #Restrict this action to specific roles, leave blank to remove restrictions
+    roles:
+      - //customer-manager
+
+#######################
+#    Notifications    #
+#######################
+
+# Relative path to custom built notifications page
+advanced_notifications_path: notifications
+
+notifications:
+    #Unique ID (unique to your app)
+  - id: new-customer
+    #Display name
+    name: New Customers
+    #Information about when/how this event is triggered
+    description: Triggered when a new customer has been created
+    #Icon to display
+    icon: material:person add
+    #Attributes of the notification
+    attributes:
+        #Attribute Key
+      - name: externalReference
+        #Type of value (string, boolean, integer, float)
+        type: string
+    #Restrict this action to specific roles, leave blank to remove restrictions
+    roles:
+      - //customer-manager
+      - administrator
+
+#######################
+#        Roles        #
+#######################
+# Set all the roles which are utilised by this application
+
+roles:
+
+    # ID for this role, should be specified as <vendor>/<app-id>/<role-id> (role ID unique to this app)
+  - id: vendor/app-id/customer-manager
+    #Name of this role
+    name: Customer Manager
+    #Description of this role
+    description: An employee who managed customers
+
+  # Can be shortened to //role-id for dynamic completion of vendor and app-id
+  - id: //customer-manager
+  #To use a vendor defined role, or a global role, simply specify its id
+  #Vendor roles must be specified as <vendor>/<role-id>
+  - id: vendor/manager
+  #Can be shortened to //role-id for dynamic completion of vendor
+  - id: /manager
+    # Global roles must be prefixed with a /
+  - id: administrator
+
+#######################
+#    Configuration    #
+#######################
+
+# Relative path to custom built configuration page
+advanced_config_path: advanced-config
+
+config:
+    #ID for this config item, used in setting and retrieving
+  - id: external-link
+    #Display name
+    name: External Link
+    #Description
+    description: URI to send user to when clicking on an external reference (opens in a new window)
+    #Type of value (array:comma, array:line, string, boolean, integer, float, json, uri, options)
+    type: uri
+
+    #Other Examples
+  - id: require-email-verification
+    name: Require Email Verification
+    description: Require email verification before a customer can log in.
+    type: boolean
+    default: false
+    values:
+     - true: Require email verification
+     - false: Don't require email verification
+
+  - id: require-approval
+    name: Require Approval
+    description: Require administrators to approve new accounts.
+    help: "Newly registered accounts can either be placed into a manual approval queue for administrative review, or automatically activated immediately. The approval queue is enabled by default because it gives you greater control over who can register an account and access."
+    note: "NOTE: Before you disable the queue, make sure {{email-domains}} is configured correctly!"
+    type: boolean
+    default: true
+    values:
+     - true: Require Administrators to Approve Accounts
+     - false: Don't require manual approval
+
+  - id: email-domains
+    name: Email Domains
+    description: Only allow registration from particular domains.
+    help: |
+      You can restrict allowed email addresses to certain domains (like yourcompany.com) by setting a list of allowed domains here.
+      Users will only be allowed to register using email addresses at one of the domains, and will only be able to add new email addresses for these domains. If you configure this, it implies {{require-email-verification}}.
+      You should omit the @ from domains. Note that the domain must match exactly. If you allow yourcompany.com, that permits joe@yourcompany.com but rejects joe@mail.yourcompany.com.
+    type: array:line
