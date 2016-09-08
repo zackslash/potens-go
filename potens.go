@@ -1,7 +1,6 @@
 package potens
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"flag"
@@ -10,6 +9,7 @@ import (
 	"github.com/fortifi/potens-go/identity"
 	"github.com/fortifi/potens-go/imperium/proto"
 	"github.com/satori/go.uuid"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -226,7 +226,7 @@ func GetAppConnection(appId string, opts ...grpc.DialOption) (*grpc.ClientConn, 
 		return nil, err
 	}
 
-	opts = append(opts,grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+	opts = append(opts, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 	return grpc.Dial(locationResult.ServiceHost+":"+strconv.FormatInt(int64(locationResult.ServicePort), 10), opts...)
 }
