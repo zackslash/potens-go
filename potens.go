@@ -15,6 +15,8 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"path"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -34,18 +36,54 @@ var (
 	currentStatus       = discovery.ServiceStatus_OFFLINE
 )
 
-func Start(definition *definition.AppDefinition, identity *identity.AppIdentity) error {
+func relPath(file string) string {
+	_, filename, _, _ := runtime.Caller(2)
+	return path.Join(path.Dir(filename), file)
+}
 
-	if identity.AppID != definition.AppId {
+func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) error {
+
+	if appIdent == nil {
+		appIdent = &identity.AppIdentity{}
+		err := appIdent.FromJsonFile(relPath("app-identity.json"))
+		if err != nil {
+			return err
+		}
+	}
+
+	if appDef == nil {
+		appDef = &definition.AppDefinition{}
+		err := appDef.FromConfig(relPath("app-definition.yaml"))
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(appIdent.AppID) < 2 {
+		log.Fatal("The App ID specified in your definition file is invalid")
+	}
+
+	if appIdent.AppID != appDef.AppId {
 		log.Fatal("The App ID in your definition file does not match your identity file")
 	}
 
-	appDefinition = definition
-	appIdentity = identity
+	appDefinition = appDef
+	appIdentity = appIdent
 
-	log.Print("Starting App: " + definition.AppId + " - " + definition.Name)
-	log.Print("Authing with: " + identity.IdentityId + " - " + identity.IdentityType)
+	log.Print("Starting App: " + appDefinition.AppId + " - " + appDefinition.Name)
+	log.Print("Authing with: " + appIdentity.IdentityId + " - " + appIdentity.IdentityType)
+
 	flag.Parse()
+	log.SetFlags(0)
+
+	usePort := *port
+	if usePort == 0 {
+		minPort := 50060
+		maxPort := 55555
+		rand.Seed(time.Now().UTC().UnixNano())
+		usePort = rand.Intn(maxPort-minPort) + minPort
+		port = &usePort
+	}
 
 	err := getCerts()
 	if err != nil {
@@ -157,15 +195,7 @@ func getCerts() error {
 
 func CreateServer() (net.Listener, *grpc.Server, error) {
 
-	usePort := *port
-	if usePort == 0 {
-		minPort := 50060
-		maxPort := 55555
-		rand.Seed(time.Now().UTC().UnixNano())
-		usePort = rand.Intn(maxPort-minPort) + minPort
-	}
-
-	lis, err := net.Listen("tcp", hostname+":"+strconv.FormatInt(int64(usePort), 10))
+	lis, err := net.Listen("tcp", hostname+":"+strconv.FormatInt(int64(*port), 10))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -186,4 +216,17 @@ func Identity() *identity.AppIdentity {
 
 func Definition() *definition.AppDefinition {
 	return appDefinition
+}
+
+func GetAppConnection(appId string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+
+	locationResult, err := discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: appId})
+
+	if err != nil {
+		return nil, err
+	}
+
+	opts = append(opts,grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+
+	return grpc.Dial(locationResult.ServiceHost+":"+strconv.FormatInt(int64(locationResult.ServicePort), 10), opts...)
 }
