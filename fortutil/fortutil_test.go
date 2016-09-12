@@ -16,4 +16,7 @@ func TestValidateID(t *testing.T) {
 	if fortutil.ValidateID(fortutil.CreateID("kh w-ekhwlkeh  --   fklwhelkfh£$*%(^£@^$I!@&$! wjg")) != nil {
 		t.Fail()
 	}
+	if fortutil.ValidateID(fortutil.CreateID("abcdef")) != nil {
+		t.Fail()
+	}
 }

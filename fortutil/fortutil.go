@@ -19,7 +19,7 @@ func CreateID(input string) string {
 }
 
 func ValidateID(input string) error {
-	reg, _ := regexp.Compile("^[a-z0-9][a-z0-9-]+[a-z0-9]$")
+	reg, _ := regexp.Compile("^[a-z0-9][a-z0-9\\-]+[a-z0-9]$")
 	if !reg.MatchString(input) {
 		return ErrInvalidID
 	}
