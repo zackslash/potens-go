@@ -11,6 +11,7 @@ type AppDefinition struct {
 	Version                   float32
 	Vendor                    string
 	AppId                     string `yaml:"app_id"`
+	GlobalAppId               string
 	Group                     string
 	Category                  string
 	Priority                  int32
@@ -195,5 +196,9 @@ func (d *AppDefinition) FromConfig(yamlFile string) error {
 		return err
 	}
 
-	return yaml.Unmarshal(yamlContent, d)
+	err = yaml.Unmarshal(yamlContent, d)
+	if err != nil {
+		d.GlobalAppId = d.Vendor + "/" + d.AppId
+	}
+	return err
 }

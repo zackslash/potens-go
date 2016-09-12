@@ -16,7 +16,7 @@ version: 1.0
 vendor: fortifi-uk
 
 #ID of your app
-app_id: fort-customers
+app_id: customers
 
 #The group this app belongs to (used for micro apps)
 group:
