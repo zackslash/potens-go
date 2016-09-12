@@ -197,7 +197,7 @@ func (d *AppDefinition) FromConfig(yamlFile string) error {
 	}
 
 	err = yaml.Unmarshal(yamlContent, d)
-	if err != nil {
+	if err == nil {
 		d.GlobalAppId = d.Vendor + "/" + d.AppId
 	}
 	return err
