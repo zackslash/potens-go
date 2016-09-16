@@ -39,10 +39,10 @@ type AppDefinition struct {
 type AppType string
 
 const (
-	AppType_EMPLOYEE       AppType = "employee"
-	AppType_PUBLISHER      AppType = "publisher"
-	AppType_CUSTOMER       AppType = "customer"
-	AppType_DOMAIN_FEATURE AppType = "domain.feature"
+	AppTypeEmployee      AppType = "employee"
+	AppTypePublisher     AppType = "publisher"
+	AppTypeCustomer      AppType = "customer"
+	AppTypeDomainFeature AppType = "domain.feature"
 )
 
 type AppNavigation struct {
@@ -75,9 +75,9 @@ type Entity struct {
 type ListenerRepositoryType string
 
 const (
-	ListenerRepositoryType_HTTP   ListenerRepositoryType = "http"
-	ListenerRepositoryType_PUBSUB ListenerRepositoryType = "pubsub"
-	ListenerRepositoryType_SQS    ListenerRepositoryType = "sqs"
+	ListenerRepositoryTypeHTTP   ListenerRepositoryType = "http"
+	ListenerRepositoryTypePubSub ListenerRepositoryType = "pubsub"
+	ListenerRepositoryTypeSQS    ListenerRepositoryType = "sqs"
 )
 
 type AppListener struct {
@@ -98,9 +98,9 @@ type AppListenerConfig struct {
 type QuickActionMode string
 
 const (
-	QuickActionMode_PAGE   QuickActionMode = "page"
-	QuickActionMode_DIALOG QuickActionMode = "dialog"
-	QuickActionMode_WINDOW QuickActionMode = "window"
+	QuickActionModePage   QuickActionMode = "page"
+	QuickActionModeDialog QuickActionMode = "dialog"
+	QuickActionModeWindow QuickActionMode = "window"
 )
 
 type AppQuickAction struct {
@@ -146,10 +146,10 @@ type AppNotification struct {
 type AppNotificationAttributeType string
 
 const (
-	AppNotificationAttributeType_STRING  AppNotificationAttributeType = "string"
-	AppNotificationAttributeType_INTEGER AppNotificationAttributeType = "integer"
-	AppNotificationAttributeType_FLOAT   AppNotificationAttributeType = "float"
-	AppNotificationAttributeType_BOOLEAN AppNotificationAttributeType = "boolean"
+	AppNotificationAttributeTypeString  AppNotificationAttributeType = "string"
+	AppNotificationAttributeTypeInteger AppNotificationAttributeType = "integer"
+	AppNotificationAttributeTypeFloat   AppNotificationAttributeType = "float"
+	AppNotificationAttributeTypeBoolean AppNotificationAttributeType = "boolean"
 )
 
 type AppNotificationAttribute struct {
@@ -170,15 +170,15 @@ type AppRole struct {
 type AppConfigType string
 
 const (
-	AppConfigType_STRING      AppConfigType = "string"
-	AppConfigType_INTEGER     AppConfigType = "integer"
-	AppConfigType_FLOAT       AppConfigType = "float"
-	AppConfigType_BOOLEAN     AppConfigType = "boolean"
-	AppConfigType_JSON        AppConfigType = "json"
-	AppConfigType_URI         AppConfigType = "uri"
-	AppConfigType_OPTIONS     AppConfigType = "options"
-	AppConfigType_ARRAY_COMMA AppConfigType = "array:comma"
-	AppConfigType_ARRAY_LINE  AppConfigType = "array:line"
+	AppConfigTypeString     AppConfigType = "string"
+	AppConfigTypeInteger    AppConfigType = "integer"
+	AppConfigTypeFloat      AppConfigType = "float"
+	AppConfigTypeBoolean    AppConfigType = "boolean"
+	AppConfigTypeJson       AppConfigType = "json"
+	AppConfigTypeUri        AppConfigType = "uri"
+	AppConfigTypeOptions    AppConfigType = "options"
+	AppConfigTypeArrayComma AppConfigType = "array:comma"
+	AppConfigTypeArrayLine  AppConfigType = "array:line"
 )
 
 type AppConfig struct {
