@@ -4,6 +4,14 @@ import (
 	"crypto/tls"
 	"errors"
 	"flag"
+	"log"
+	"math/rand"
+	"net"
+	"path"
+	"runtime"
+	"strconv"
+	"time"
+
 	"github.com/fortifi/potens-go/definition"
 	"github.com/fortifi/potens-go/identity"
 	"github.com/fortifi/proto-go/discovery"
@@ -12,13 +20,6 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"log"
-	"math/rand"
-	"net"
-	"path"
-	"runtime"
-	"strconv"
-	"time"
 )
 
 var (
@@ -32,7 +33,7 @@ var (
 	imperiumKey         []byte
 	appDefinition       *definition.AppDefinition
 	appIdentity         *identity.AppIdentity
-	instanceId          = uuid.NewV4().String()
+	instanceID          = uuid.NewV4().String()
 	currentStatus       = discovery.ServiceStatus_OFFLINE
 )
 
@@ -41,11 +42,12 @@ func relPath(file string) string {
 	return path.Join(path.Dir(filename), file)
 }
 
+// Start your service, retrieves tls Certificate to server, and registers with discovery service
 func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) error {
 
 	if appIdent == nil {
 		appIdent = &identity.AppIdentity{}
-		err := appIdent.FromJsonFile(relPath("app-identity.json"))
+		err := appIdent.FromJSONFile(relPath("app-identity.json"))
 		if err != nil {
 			return err
 		}
@@ -100,7 +102,7 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 	discoClient = discovery.NewDiscoveryClient(discoveryConn)
 	regResult, err := discoClient.Register(context.Background(), &discovery.RegisterRequest{
 		AppId:        appDef.GlobalAppID,
-		InstanceUuid: instanceId,
+		InstanceUuid: instanceID,
 		ServiceHost:  hostname,
 		ServicePort:  int32(*port),
 	})
@@ -122,17 +124,18 @@ func heartBeat() {
 		for {
 			discoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
 				AppId:        appDefinition.GlobalAppID,
-				InstanceUuid: instanceId,
+				InstanceUuid: instanceID,
 			})
 			time.Sleep(10 * time.Second)
 		}
 	}
 }
 
+// Online take your service online
 func Online() error {
 	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        appDefinition.GlobalAppID,
-		InstanceUuid: instanceId,
+		InstanceUuid: instanceID,
 		Status:       discovery.ServiceStatus_ONLINE,
 		Target:       discovery.StatusTarget_BOTH,
 	})
@@ -151,10 +154,11 @@ func Online() error {
 	return nil
 }
 
+// Offline take your service offline
 func Offline() error {
 	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        appDefinition.GlobalAppID,
-		InstanceUuid: instanceId,
+		InstanceUuid: instanceID,
 		Status:       discovery.ServiceStatus_OFFLINE,
 		Target:       discovery.StatusTarget_INSTANCE,
 	})
@@ -194,6 +198,7 @@ func getCerts() error {
 	return nil
 }
 
+// CreateServer creates a gRPC server with your tls certificates
 func CreateServer() (net.Listener, *grpc.Server, error) {
 
 	lis, err := net.Listen("tcp", hostname+":"+strconv.FormatInt(int64(*port), 10))
@@ -211,17 +216,20 @@ func CreateServer() (net.Listener, *grpc.Server, error) {
 	return lis, s, nil
 }
 
+// Identity retrieves your identity
 func Identity() *identity.AppIdentity {
 	return appIdentity
 }
 
+// Definition retrieves your definition
 func Definition() *definition.AppDefinition {
 	return appDefinition
 }
 
-func GetAppConnection(globalAppId string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+// GetAppConnection grpc.dial a service based on the discovery service
+func GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
-	locationResult, err := discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppId})
+	locationResult, err := discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppID})
 
 	if err != nil {
 		return nil, err

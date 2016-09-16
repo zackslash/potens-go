@@ -1,10 +1,12 @@
 package definition
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
+
+	"gopkg.in/yaml.v2"
 )
 
+// AppDefinition Application Definition
 type AppDefinition struct {
 	Type                      string
 	ConfigVersion             float32 `yaml:"config_version"`
@@ -32,19 +34,22 @@ type AppDefinition struct {
 	Config                    []AppConfig
 }
 
-/**
- * Application Type
- */
-
+// AppType Application Type
 type AppType string
 
+//App Types
 const (
-	AppTypeEmployee      AppType = "employee"
-	AppTypePublisher     AppType = "publisher"
-	AppTypeCustomer      AppType = "customer"
+	// AppTypeEmployee Employee
+	AppTypeEmployee AppType = "employee"
+	// AppTypePublisher Publisher
+	AppTypePublisher AppType = "publisher"
+	// AppTypeCustomer Customer
+	AppTypeCustomer AppType = "customer"
+	// AppTypeDomainFeature Domain Feature
 	AppTypeDomainFeature AppType = "domain.feature"
 )
 
+// AppNavigation Application Navigation ITem
 type AppNavigation struct {
 	ID          string
 	Name        string
@@ -54,12 +59,14 @@ type AppNavigation struct {
 	Roles       []string
 }
 
+// AppEntities Entity values for building FIDs
 type AppEntities struct {
 	AppKey    string            `yaml:"app_key"`
 	VendorKey string            `yaml:"vendor_key"`
 	Entities  map[string]Entity `yaml:",inline"`
 }
 
+// Entity Definition of a single FDL data type
 type Entity struct {
 	Name        string
 	Plural      string
@@ -68,41 +75,45 @@ type Entity struct {
 	Hovercard   string
 }
 
-/**
- * Listener Repository Type
- */
-
+// ListenerRepositoryType Service to listen to events on
 type ListenerRepositoryType string
 
+// Types of listeners
 const (
-	ListenerRepositoryTypeHTTP   ListenerRepositoryType = "http"
+	// Basic HTTP requests
+	ListenerRepositoryTypeHTTP ListenerRepositoryType = "http"
+	// Google Pub Sub
 	ListenerRepositoryTypePubSub ListenerRepositoryType = "pubsub"
-	ListenerRepositoryTypeSQS    ListenerRepositoryType = "sqs"
+	// Amazon SQS
+	ListenerRepositoryTypeSQS ListenerRepositoryType = "sqs"
 )
 
+// AppListener Definition of your app listener
 type AppListener struct {
 	Enabled    bool
 	Repository ListenerRepositoryType
 	Config     []AppListenerConfig
 }
 
+// AppListenerConfig Config items for listener
 type AppListenerConfig struct {
 	Name  string
 	Value string
 }
 
-/**
- * Quick Action Mode
- */
-
+// QuickActionMode Launch mode for a quick action
 type QuickActionMode string
 
 const (
-	QuickActionModePage   QuickActionMode = "page"
+	// QuickActionModePage Redirect to a new page
+	QuickActionModePage QuickActionMode = "page"
+	// QuickActionModeDialog Open a dialog window
 	QuickActionModeDialog QuickActionMode = "dialog"
+	// QuickActionModeWindow Open in a new window
 	QuickActionModeWindow QuickActionMode = "window"
 )
 
+// AppQuickAction Quick Action provided by your app
 type AppQuickAction struct {
 	ID    string
 	Name  string
@@ -112,6 +123,7 @@ type AppQuickAction struct {
 	Roles []string
 }
 
+// AppSearchAction Search Action provided by your app
 type AppSearchAction struct {
 	ID          string
 	Name        string
@@ -122,6 +134,7 @@ type AppSearchAction struct {
 	Tokens      []string
 }
 
+// AppQueue Queue provided by your app
 type AppQueue struct {
 	ID    string
 	Name  string
@@ -130,6 +143,7 @@ type AppQueue struct {
 	Roles []string
 }
 
+// AppNotification notification provided by your app
 type AppNotification struct {
 	ID          string
 	Name        string
@@ -139,48 +153,58 @@ type AppNotification struct {
 	Attributes  []AppNotificationAttribute
 }
 
-/**
- * App Notification Attribute Type
- */
-
+// AppNotificationAttributeType Type of notification attribute
 type AppNotificationAttributeType string
 
 const (
-	AppNotificationAttributeTypeString  AppNotificationAttributeType = "string"
+	// AppNotificationAttributeTypeString String Type
+	AppNotificationAttributeTypeString AppNotificationAttributeType = "string"
+	// AppNotificationAttributeTypeInteger Integer Type
 	AppNotificationAttributeTypeInteger AppNotificationAttributeType = "integer"
-	AppNotificationAttributeTypeFloat   AppNotificationAttributeType = "float"
+	// AppNotificationAttributeTypeFloat Float Type
+	AppNotificationAttributeTypeFloat AppNotificationAttributeType = "float"
+	// AppNotificationAttributeTypeBoolean Boolean Type
 	AppNotificationAttributeTypeBoolean AppNotificationAttributeType = "boolean"
 )
 
+// AppNotificationAttribute Attribute on your notification
 type AppNotificationAttribute struct {
 	Name string
 	Type AppNotificationAttributeType
 }
 
+// AppRole Roles provided by your application
 type AppRole struct {
 	ID          string
 	Name        string
 	Description string
 }
 
-/**
- * App Config Type
- */
-
+// AppConfigType - Type of config value
 type AppConfigType string
 
 const (
-	AppConfigTypeString     AppConfigType = "string"
-	AppConfigTypeInteger    AppConfigType = "integer"
-	AppConfigTypeFloat      AppConfigType = "float"
-	AppConfigTypeBoolean    AppConfigType = "boolean"
-	AppConfigTypeJson       AppConfigType = "json"
-	AppConfigTypeUri        AppConfigType = "uri"
-	AppConfigTypeOptions    AppConfigType = "options"
+	// AppConfigTypeString String
+	AppConfigTypeString AppConfigType = "string"
+	// AppConfigTypeInteger Integer
+	AppConfigTypeInteger AppConfigType = "integer"
+	// AppConfigTypeFloat Float
+	AppConfigTypeFloat AppConfigType = "float"
+	// AppConfigTypeBoolean Boolean
+	AppConfigTypeBoolean AppConfigType = "boolean"
+	// AppConfigTypeJSON Json
+	AppConfigTypeJSON AppConfigType = "json"
+	// AppConfigTypeURI Uri
+	AppConfigTypeURI AppConfigType = "uri"
+	// AppConfigTypeOptions Options
+	AppConfigTypeOptions AppConfigType = "options"
+	// AppConfigTypeArrayComma ArrayComma
 	AppConfigTypeArrayComma AppConfigType = "array:comma"
-	AppConfigTypeArrayLine  AppConfigType = "array:line"
+	// AppConfigTypeArrayLine ArrayLine
+	AppConfigTypeArrayLine AppConfigType = "array:line"
 )
 
+// AppConfig Configurable item for your app per organisation
 type AppConfig struct {
 	ID          string
 	Name        string
@@ -190,6 +214,7 @@ type AppConfig struct {
 	Values      []map[string]string
 }
 
+// FromConfig Populates your definition based on your app-definition.yaml
 func (d *AppDefinition) FromConfig(yamlFile string) error {
 	yamlContent, err := ioutil.ReadFile(yamlFile)
 	if err != nil {
