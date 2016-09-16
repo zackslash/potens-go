@@ -7,7 +7,7 @@ import (
 
 type AppIdentity struct {
 	IdentityType string `json:"type"`
-	IdentityId   string `json:"identity_id"`
+	IdentityID   string `json:"identity_id"`
 	AppID        string `json:"service_name"`
 	PrivateKey   string `json:"private_key"`
 }

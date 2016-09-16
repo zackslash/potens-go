@@ -59,19 +59,20 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 		}
 	}
 
-	if len(appIdent.AppID) < 2 {
+	if len(appDef.Vendor) < 2 {
+		log.Fatal("The Vendor ID specified in your definition file is invalid")
+	}
+
+	if len(appDef.AppID) < 2 {
 		log.Fatal("The App ID specified in your definition file is invalid")
 	}
 
-	if appIdent.AppID != appDef.GlobalAppId {
+	if appIdent.AppID != appDef.GlobalAppID {
 		log.Fatal("The App ID in your definition file does not match your identity file")
 	}
 
-	appDefinition = appDef
-	appIdentity = appIdent
-
-	log.Print("Starting App: " + appDefinition.GlobalAppId + " - " + appDefinition.Name)
-	log.Print("Authing with: " + appIdentity.IdentityId + " - " + appIdentity.IdentityType)
+	log.Print("Starting App: " + appDef.GlobalAppID + " - " + appDef.Name)
+	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
 
 	flag.Parse()
 	log.SetFlags(0)
@@ -98,7 +99,7 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 
 	discoClient = discovery.NewDiscoveryClient(discoveryConn)
 	regResult, err := discoClient.Register(context.Background(), &discovery.RegisterRequest{
-		AppId:        appDefinition.GlobalAppId,
+		AppId:        appDef.GlobalAppID,
 		InstanceUuid: instanceId,
 		ServiceHost:  hostname,
 		ServicePort:  int32(*port),
@@ -120,7 +121,7 @@ func heartBeat() {
 	if currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
 			discoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
-				AppId:        appDefinition.GlobalAppId,
+				AppId:        appDefinition.GlobalAppID,
 				InstanceUuid: instanceId,
 			})
 			time.Sleep(10 * time.Second)
@@ -130,7 +131,7 @@ func heartBeat() {
 
 func Online() error {
 	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
-		AppId:        appDefinition.GlobalAppId,
+		AppId:        appDefinition.GlobalAppID,
 		InstanceUuid: instanceId,
 		Status:       discovery.ServiceStatus_ONLINE,
 		Target:       discovery.StatusTarget_BOTH,
@@ -152,7 +153,7 @@ func Online() error {
 
 func Offline() error {
 	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
-		AppId:        appDefinition.GlobalAppId,
+		AppId:        appDefinition.GlobalAppID,
 		InstanceUuid: instanceId,
 		Status:       discovery.ServiceStatus_OFFLINE,
 		Target:       discovery.StatusTarget_INSTANCE,
@@ -178,7 +179,7 @@ func getCerts() error {
 	}
 	c := imperium.NewImperiumClient(imperiumConnection)
 	response, err := c.Request(context.Background(), &imperium.CertificateRequest{
-		AppId: appDefinition.GlobalAppId,
+		AppId: appDefinition.GlobalAppID,
 	})
 	if err != nil {
 		return err

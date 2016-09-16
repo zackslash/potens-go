@@ -1,5 +1,5 @@
 hash: d8fecf46e2d0a74b5187faf8df04b0c7d47763fa2c07f4ace158cbbe669486a7
-updated: 2016-09-08T17:36:02.178859861+01:00
+updated: 2016-09-12T15:09:43.222837151+01:00
 imports:
 - name: github.com/fortifi/proto-go
   version: aa549349c7f637a03e58bdd79cfdee2cadb00993
@@ -14,7 +14,7 @@ imports:
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
-  version: 9313baa13d9262e49d07b20ed57dceafcd7240cc
+  version: cfe3c2a7525b50c3d707256e371c90938cfef98a
   subpackages:
   - context
   - http2
