@@ -258,7 +258,11 @@ func (d *AppDefinition) FromConfig(yamlFile string) error {
 		return err
 	}
 
-	err = yaml.Unmarshal(yamlContent, d)
+	return d.FromYamlString(yamlContent)
+}
+
+func (d *AppDefinition) FromYamlString(yamlContent string) error {
+	err := yaml.Unmarshal(yamlContent, d)
 	if err == nil {
 		d.GlobalAppID = d.Vendor + "/" + d.AppID
 	}
