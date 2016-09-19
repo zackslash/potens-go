@@ -1,13 +1,14 @@
 package identity_test
 
 import (
-	"github.com/fortifi/potens-go/identity"
 	"testing"
+
+	"github.com/fortifi/potens-go/identity"
 )
 
 func TestReadYaml(t *testing.T) {
 	ident := identity.AppIdentity{}
-	err := ident.FromJsonFile("../app-identity.json")
+	err := ident.FromJSONFile("../app-identity.json")
 	if err != nil {
 		t.Fatal(err)
 	}
