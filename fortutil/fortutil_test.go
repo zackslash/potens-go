@@ -36,3 +36,27 @@ func TestRandomAlphaNum(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestAcronym(t *testing.T) {
+	if fortutil.Acronym("A Really Long Acronym Goes Here", 3) != "ARL" {
+		t.Error("Limited Long Acronym Failed")
+	}
+	if fortutil.Acronym("A Really Long Acronym Goes Here", 0) != "ARLAGH" {
+		t.Error("Long Acronym Failed")
+	}
+	if fortutil.Acronym("Fortifi Technologies Ltd", 3) != "FTL" {
+		t.Error("Length Matching Size Acronym Failed")
+	}
+	if fortutil.Acronym("Fortifi Technologies", 3) != "FTE" {
+		t.Error("Extended End Acronym Failed")
+	}
+	if fortutil.Acronym("Fortifi Technologies", 0) != "FT" {
+		t.Error("Short Acronym Failure")
+	}
+	if fortutil.Acronym("Fortifi", 3) != "FOR" {
+		t.Error("Single Word Acronym with Length Failed")
+	}
+	if fortutil.Acronym("Fortifi", 0) != "F" {
+		t.Error("Single Word Acronym Failed")
+	}
+}
