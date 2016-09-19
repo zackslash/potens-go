@@ -1,8 +1,9 @@
 package fortutil_test
 
 import (
-	"github.com/fortifi/potens-go/fortutil"
 	"testing"
+
+	"github.com/fortifi/potens-go/fortutil"
 )
 
 func TestCreateID(t *testing.T) {
@@ -17,6 +18,21 @@ func TestValidateID(t *testing.T) {
 		t.Fail()
 	}
 	if fortutil.ValidateID(fortutil.CreateID("abcdef")) != nil {
+		t.Fail()
+	}
+}
+
+func TestRandomAlphaNum(t *testing.T) {
+	if len(fortutil.RandomAlphaNum(1)) != 1 {
+		t.Fail()
+	}
+	if len(fortutil.RandomAlphaNum(10)) != 10 {
+		t.Fail()
+	}
+	if len(fortutil.RandomAlphaNum(100)) != 100 {
+		t.Fail()
+	}
+	if len(fortutil.RandomAlphaNum(1000)) != 1000 {
 		t.Fail()
 	}
 }
