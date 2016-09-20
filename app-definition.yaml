@@ -40,8 +40,8 @@ name: Customers
 #Description of the app, shown with the app in menus and summaries
 description: Management of base customer information
 
-#fort-icon value, can be material:<material design icon name>, iron:<iron icon name>, or an svg
-icon: material:3d_rotation
+#fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
+icon: social:group
 
 #######################
 #     Navigation      #
@@ -52,8 +52,8 @@ navigation:
     name: List Customers
     # Menu Item Help Text (e.g. Tooltip, Sub Header)
     description: Show all your customers
-    #fort-icon value, can be material:<material design icon name>, iron:<iron icon name>, or an svg
-    icon: material:3d_rotation
+    #fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
+    icon: social:group
     #Path to follow (relative to your application)
     path: customers/
     #Restrict this menu item to specific roles, leave blank to remove restrictions
@@ -112,7 +112,7 @@ quick_actions:
     #Display name - Will be the only text visible for this action
     name: Create a Customer
     #Icon to display
-    icon: material:person add
+    icon: social:person-add
     #Launch style (page, dialog, window)
     mode: dialog
     #Path to complete this action (window mode must be a full uri, page and dialog are relative to your app path)
@@ -134,7 +134,7 @@ search_actions:
     #Description to show with the search result
     description: Display the most recently joined customers
     #Icon to display
-    icon: material:group add
+    icon: social:group-add
     #Path to complete this action relative to your app path
     path: customers/list-new
     #Keywords one per line
@@ -158,7 +158,7 @@ queues:
     #Display name
     name: Pending Customers
     #Icon to display
-    icon: material:person outline
+    icon: social:person-outline
     #Path to the handler for this queue
     path: customers/pending/queue
     #Restrict this action to specific roles, leave blank to remove restrictions
@@ -180,7 +180,7 @@ notifications:
     #Information about when/how this event is triggered
     description: Triggered when a new customer has been created
     #Icon to display
-    icon: material:person add
+    icon: social:person-add
     #Attributes of the notification
     attributes:
         #Attribute Key
