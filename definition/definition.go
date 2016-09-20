@@ -23,7 +23,7 @@ type AppDefinition struct {
 	AppType                   AppType `yaml:"app_type"`
 	Name                      i18n.Translations
 	Description               i18n.Translations
-	icon                      string
+	Icon                      string
 	AdvancedNotificationsPath string `yaml:"advanced_notifications_path"`
 	AdvancedConfigPath        string `yaml:"advanced_config_path"`
 	Navigation                []AppNavigation
