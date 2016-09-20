@@ -73,6 +73,9 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 		log.Fatal("The App ID in your definition file does not match your identity file")
 	}
 
+	appDefinition = appDef
+	appIdentity = appIdent
+
 	log.Print("Starting App: " + appDef.GlobalAppID + " - " + appDef.Name)
 	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
 
