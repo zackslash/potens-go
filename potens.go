@@ -23,11 +23,12 @@ import (
 )
 
 var (
-	hostname            string
-	port                = flag.Int("service-port", 0, "grpc service port")
-	discoveryService    = flag.String("discovery-service", "discovery.fortifi.me:50056", "Fortifi App Discovery Service")
-	discoveryConn       *grpc.ClientConn
-	discoClient         discovery.DiscoveryClient
+	hostname         string
+	port             = flag.Int("service-port", 0, "grpc service port")
+	discoveryService = flag.String("discovery-service", "discovery.fortifi.me:50056", "Fortifi App Discovery Service")
+	discoveryConn    *grpc.ClientConn
+	//DiscoClient Used for service discovery
+	DiscoClient         discovery.DiscoveryClient
 	imperiumService     = flag.String("imperium-service", "imperium.fortifi.me:50055", "Fortifi Imperium Service")
 	imperiumCertificate []byte
 	imperiumKey         []byte
@@ -102,8 +103,8 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 		log.Fatal(err)
 	}
 
-	discoClient = discovery.NewDiscoveryClient(discoveryConn)
-	regResult, err := discoClient.Register(context.Background(), &discovery.RegisterRequest{
+	DiscoClient = discovery.NewDiscoveryClient(discoveryConn)
+	regResult, err := DiscoClient.Register(context.Background(), &discovery.RegisterRequest{
 		AppId:        appDef.GlobalAppID,
 		InstanceUuid: instanceID,
 		ServiceHost:  hostname,
@@ -125,7 +126,7 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 func heartBeat() {
 	if currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
-			discoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
+			DiscoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
 				AppId:        appDefinition.GlobalAppID,
 				InstanceUuid: instanceID,
 			})
@@ -136,7 +137,7 @@ func heartBeat() {
 
 // Online take your service online
 func Online() error {
-	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
+	statusResult, err := DiscoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        appDefinition.GlobalAppID,
 		InstanceUuid: instanceID,
 		Status:       discovery.ServiceStatus_ONLINE,
@@ -159,7 +160,7 @@ func Online() error {
 
 // Offline take your service offline
 func Offline() error {
-	statusResult, err := discoClient.Status(context.Background(), &discovery.StatusRequest{
+	statusResult, err := DiscoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        appDefinition.GlobalAppID,
 		InstanceUuid: instanceID,
 		Status:       discovery.ServiceStatus_OFFLINE,
@@ -232,7 +233,7 @@ func Definition() *definition.AppDefinition {
 // GetAppConnection grpc.dial a service based on the discovery service
 func GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
-	locationResult, err := discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppID})
+	locationResult, err := DiscoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppID})
 
 	if err != nil {
 		return nil, err
