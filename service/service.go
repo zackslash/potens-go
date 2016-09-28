@@ -43,6 +43,7 @@ type FortifiService struct {
 	parsedEnv        bool
 	imperiumService  string
 	discoveryService string
+	fidentService    string
 }
 
 func (s *FortifiService) parseEnv() {
@@ -74,6 +75,18 @@ func (s *FortifiService) parseEnv() {
 		s.imperiumService += ":" + defaultPort
 	} else {
 		s.imperiumService += ":" + imperiumPort
+	}
+
+	s.fidentService = os.Getenv("FIDENT_LOCATION")
+	if s.fidentService == "" {
+		s.fidentService = "api.fident.io"
+	}
+
+	fidentPort := os.Getenv("FIDENT_PORT")
+	if fidentPort == "" {
+		s.fidentService += ":" + defaultPort
+	} else {
+		s.fidentService += ":" + fidentPort
 	}
 
 	s.parsedEnv = true
