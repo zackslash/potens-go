@@ -95,7 +95,7 @@ func (s *FortifiService) relPath(file string) string {
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
 func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) error {
 
-	if !s.parsedEnv && parseEnv {
+	if !s.parsedEnv && *parseEnv {
 		s.parseEnv()
 	}
 
@@ -152,7 +152,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	}
 
 	if s.discoClient == nil {
-		discoveryConn, err := grpc.Dial(*s.discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		discoveryConn, err := grpc.Dial(s.discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
 			log.Fatal(err)
@@ -238,7 +238,7 @@ func (s *FortifiService) Offline() error {
 
 func (s *FortifiService) getCerts() error {
 
-	imperiumConnection, err := grpc.Dial(*s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+	imperiumConnection, err := grpc.Dial(s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 	if err != nil {
 		return err
 	}
@@ -272,9 +272,9 @@ func (s *FortifiService) CreateServer() (net.Listener, *grpc.Server, error) {
 		return nil, nil, err
 	}
 
-	s := grpc.NewServer(grpc.Creds(credentials.NewServerTLSFromCert(&cert)))
+	serv := grpc.NewServer(grpc.Creds(credentials.NewServerTLSFromCert(&cert)))
 
-	return lis, s, nil
+	return lis, serv, nil
 }
 
 // Identity retrieves your identity
