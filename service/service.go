@@ -29,7 +29,7 @@ var (
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
-type service struct {
+type FortifiService struct {
 	appDefinition       *definition.AppDefinition
 	appIdentity         *identity.AppIdentity
 	port                int32
@@ -45,7 +45,7 @@ type service struct {
 	discoveryService string
 }
 
-func (s *service) parseEnv() {
+func (s *FortifiService) parseEnv() {
 	defaultPort := "50051"
 	fortDomain := os.Getenv("FORT_DOMAIN")
 	if fortDomain == "" {
@@ -79,21 +79,21 @@ func (s *service) parseEnv() {
 	s.parsedEnv = true
 }
 
-func (s *service) SetPort(port int32) {
+func (s *FortifiService) SetPort(port int32) {
 	s.port = port
 }
 
-func (s *service) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
+func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
 	s.discoClient = discoClient
 }
 
-func (s *service) relPath(file string) string {
+func (s *FortifiService) relPath(file string) string {
 	_, filename, _, _ := runtime.Caller(2)
 	return path.Join(path.Dir(filename), file)
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *service) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity, requestCertificates bool) error {
+func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity, requestCertificates bool) error {
 
 	if !s.parsedEnv && parseEnv {
 		s.parseEnv()
@@ -184,7 +184,7 @@ func (s *service) Start(appDef *definition.AppDefinition, appIdent *identity.App
 	return nil
 }
 
-func (s *service) heartBeat() {
+func (s *FortifiService) heartBeat() {
 	if s.currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
 			s.discoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
@@ -197,7 +197,7 @@ func (s *service) heartBeat() {
 }
 
 // Online take your service online
-func (s *service) Online() error {
+func (s *FortifiService) Online() error {
 	statusResult, err := s.discoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -220,7 +220,7 @@ func (s *service) Online() error {
 }
 
 // Offline take your service offline
-func (s *service) Offline() error {
+func (s *FortifiService) Offline() error {
 	statusResult, err := s.discoClient.Status(context.Background(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -240,7 +240,7 @@ func (s *service) Offline() error {
 	return nil
 }
 
-func (s *service) getCerts() error {
+func (s *FortifiService) getCerts() error {
 
 	imperiumConnection, err := grpc.Dial(*s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 	if err != nil {
@@ -264,7 +264,7 @@ func (s *service) getCerts() error {
 }
 
 // CreateServer creates a gRPC server with your tls certificates
-func (s *service) CreateServer() (net.Listener, *grpc.Server, error) {
+func (s *FortifiService) CreateServer() (net.Listener, *grpc.Server, error) {
 
 	lis, err := net.Listen("tcp", s.hostname+":"+strconv.FormatInt(int64(s.port), 10))
 	if err != nil {
@@ -282,17 +282,17 @@ func (s *service) CreateServer() (net.Listener, *grpc.Server, error) {
 }
 
 // Identity retrieves your identity
-func (s *service) Identity() *identity.AppIdentity {
+func (s *FortifiService) Identity() *identity.AppIdentity {
 	return s.appIdentity
 }
 
 // Definition retrieves your definition
-func (s *service) Definition() *definition.AppDefinition {
+func (s *FortifiService) Definition() *definition.AppDefinition {
 	return s.appDefinition
 }
 
 // GetAppConnection grpc.dial a service based on the discovery service
-func (s *service) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
 	locationResult, err := s.discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppID})
 
