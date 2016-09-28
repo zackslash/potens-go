@@ -26,7 +26,6 @@ var (
 	hostname         string
 	port             = flag.Int("service-port", 0, "grpc service port")
 	discoveryService = flag.String("discovery-service", "discovery.fortifi.me:50056", "Fortifi App Discovery Service")
-	discoveryConn    *grpc.ClientConn
 	//DiscoClient Used for service discovery
 	DiscoClient         discovery.DiscoveryClient
 	imperiumService     = flag.String("imperium-service", "imperium.fortifi.me:50055", "Fortifi Imperium Service")
@@ -36,6 +35,7 @@ var (
 	appIdentity         *identity.AppIdentity
 	instanceID          = uuid.NewV4().String()
 	currentStatus       = discovery.ServiceStatus_OFFLINE
+	RequestCertificates = true
 )
 
 func relPath(file string) string {
@@ -92,18 +92,23 @@ func Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) err
 		port = &usePort
 	}
 
-	err := getCerts()
-	if err != nil {
-		return err
+	if RequestCertificates {
+		err := getCerts()
+		if err != nil {
+			return err
+		}
 	}
 
-	discoveryConn, err = grpc.Dial(*discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+	if DiscoClient == nil {
+		discoveryConn, err := grpc.Dial(*discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
-	if err != nil {
-		log.Fatal(err)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		DiscoClient = discovery.NewDiscoveryClient(discoveryConn)
 	}
 
-	DiscoClient = discovery.NewDiscoveryClient(discoveryConn)
 	regResult, err := DiscoClient.Register(context.Background(), &discovery.RegisterRequest{
 		AppId:        appDef.GlobalAppID,
 		InstanceUuid: instanceID,
