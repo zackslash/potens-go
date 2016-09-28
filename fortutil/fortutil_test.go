@@ -22,6 +22,27 @@ func TestValidateID(t *testing.T) {
 	}
 }
 
+func TestValidateGlobalAppID(t *testing.T) {
+	if fortutil.ValidateGlobalAppID("/asd") == nil {
+		t.Fail()
+	}
+	if fortutil.ValidateGlobalAppID("asd/") == nil {
+		t.Fail()
+	}
+	if fortutil.ValidateGlobalAppID("/a") == nil {
+		t.Fail()
+	}
+	if fortutil.ValidateGlobalAppID("d") == nil {
+		t.Fail()
+	}
+	if fortutil.ValidateGlobalAppID("dwfwe") == nil {
+		t.Fail()
+	}
+	if fortutil.ValidateGlobalAppID("d/a") != nil {
+		t.Fail()
+	}
+}
+
 func TestRandomAlphaNum(t *testing.T) {
 	if len(fortutil.RandomAlphaNum(1)) != 1 {
 		t.Fail()

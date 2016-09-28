@@ -11,7 +11,8 @@ import (
 var (
 
 	// ErrInvalidID Error for an invalid ID
-	ErrInvalidID = errors.New("The ID specified is invalid")
+	ErrInvalidID          = errors.New("The ID specified is invalid")
+	ErrInvalidGlobalAppID = errors.New("The Global App ID specified is invalid")
 )
 
 // CreateID converts a string to a valid ID
@@ -78,4 +79,17 @@ func Acronym(source string, length int) string {
 		}
 	}
 	return strings.ToUpper(acronym)
+}
+
+func ValidateGlobalAppID(gapid string) error {
+	if strings.Trim(gapid, "/") != gapid {
+		return ErrInvalidGlobalAppID
+	}
+	if !strings.Contains(gapid, "/") {
+		return ErrInvalidGlobalAppID
+	}
+	if len(gapid) < 3 {
+		return ErrInvalidGlobalAppID
+	}
+	return nil
 }
