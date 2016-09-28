@@ -1,20 +1,20 @@
 hash: d8fecf46e2d0a74b5187faf8df04b0c7d47763fa2c07f4ace158cbbe669486a7
-updated: 2016-09-16T09:26:37.310772643+01:00
+updated: 2016-09-28T12:00:24.487538627+01:00
 imports:
 - name: github.com/fortifi/proto-go
-  version: 2d3f27b559c5eba0a9892a0d0dc256060510d3cf
+  version: 10d14649bfdf06fb560c8dfccb7f870a0325c985
   subpackages:
   - discovery
   - imperium
 - name: github.com/golang/protobuf
-  version: 1f49d83d9aa00e6ce4fc8258c71cc7786aec968a
+  version: 87c000235d3d852c1628dc9490cd21ab36a7d69f
   subpackages:
   - proto
   - ptypes/timestamp
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
-  version: 71a035914f99bb58fe82eac0f1289f10963d876c
+  version: f09c4662a0bd6bd8943ac7b4931e185df9471da4
   subpackages:
   - context
   - http2
