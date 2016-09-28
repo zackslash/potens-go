@@ -93,7 +93,7 @@ func (s *FortifiService) relPath(file string) string {
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity, requestCertificates bool) error {
+func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) error {
 
 	if !s.parsedEnv && parseEnv {
 		s.parseEnv()
@@ -139,20 +139,16 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	flag.Parse()
 	log.SetFlags(0)
 
-	usePort := s.port
-	if usePort == 0 {
+	if s.port == 0 {
 		minPort := 50060
 		maxPort := 55555
 		rand.Seed(time.Now().UTC().UnixNano())
-		usePort = rand.Intn(maxPort-minPort) + minPort
-		s.port = usePort
+		s.port = int32(rand.Intn(maxPort-minPort) + minPort)
 	}
 
-	if requestCertificates {
-		err := s.getCerts()
-		if err != nil {
-			return err
-		}
+	err := s.getCerts()
+	if err != nil {
+		return err
 	}
 
 	if s.discoClient == nil {
