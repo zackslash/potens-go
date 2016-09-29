@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"flag"
@@ -11,6 +10,8 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+
+	"golang.org/x/net/context"
 
 	"path"
 
