@@ -305,7 +305,7 @@ func (s *FortifiService) Definition() *definition.AppDefinition {
 // GetAppConnection grpc.dial a service based on the discovery service
 func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
-	locationResult, err := s.discoClient.GetLocation(context.Background(), &discovery.LocationRequest{AppId: globalAppID})
+	locationResult, err := s.discoClient.GetLocation(s.GetGrpcContext(), &discovery.LocationRequest{AppId: globalAppID})
 
 	if err != nil {
 		return nil, err
@@ -316,6 +316,7 @@ func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialO
 	return grpc.Dial(locationResult.ServiceHost+":"+strconv.FormatInt(int64(locationResult.ServicePort), 10), opts...)
 }
 
+// GetGrpcContext context to use when communicating with other services
 func (s *FortifiService) GetGrpcContext() *context.Context {
 	md := metadata.Pairs(
 		keys.GetAppIDKey(), s.appDefinition.AppID,
