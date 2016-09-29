@@ -16,6 +16,7 @@ import (
 
 	"os"
 
+	"github.com/fortifi/portcullis-go/keys"
 	"github.com/fortifi/potens-go/definition"
 	"github.com/fortifi/potens-go/identity"
 	"github.com/fortifi/proto-go/discovery"
@@ -23,6 +24,7 @@ import (
 	"github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -312,4 +314,12 @@ func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialO
 	opts = append(opts, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 	return grpc.Dial(locationResult.ServiceHost+":"+strconv.FormatInt(int64(locationResult.ServicePort), 10), opts...)
+}
+
+func (s *FortifiService) GetGrpcContext() *context.Context {
+	md := metadata.Pairs(
+		keys.GetAppIDKey(), s.appDefinition.AppID,
+		keys.GetAppVendorKey(), s.appDefinition.Vendor,
+	)
+	return metadata.NewContext(context.Background(), md)
 }

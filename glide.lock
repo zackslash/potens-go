@@ -1,6 +1,10 @@
 hash: d8fecf46e2d0a74b5187faf8df04b0c7d47763fa2c07f4ace158cbbe669486a7
-updated: 2016-09-28T12:00:24.487538627+01:00
+updated: 2016-09-29T13:29:04.567174186+01:00
 imports:
+- name: github.com/fortifi/portcullis-go
+  version: d89607c144a10b0730c0495f98b2dd526b921344
+  subpackages:
+  - keys
 - name: github.com/fortifi/proto-go
   version: 10d14649bfdf06fb560c8dfccb7f870a0325c985
   subpackages:
@@ -14,7 +18,7 @@ imports:
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
-  version: f09c4662a0bd6bd8943ac7b4931e185df9471da4
+  version: 9f0e377a8a39bb99ff03459d77c135a0042878f0
   subpackages:
   - context
   - http2
@@ -27,13 +31,13 @@ imports:
   version: 0032a855ba5c8a3c8e0d71c2deef354b70af1584
   subpackages:
   - credentials
+  - metadata
   - codes
   - grpclog
   - internal
-  - metadata
   - naming
   - transport
   - peer
 - name: gopkg.in/yaml.v2
-  version: 31c299268d302dd0aa9a0dcf765a3d58971ac83f
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []
