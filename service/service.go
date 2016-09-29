@@ -318,7 +318,7 @@ func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialO
 }
 
 // GetGrpcContext context to use when communicating with other services
-func (s *FortifiService) GetGrpcContext() *context.Context {
+func (s *FortifiService) GetGrpcContext() context.Context {
 	md := metadata.Pairs(
 		keys.GetAppIDKey(), s.appDefinition.AppID,
 		keys.GetAppVendorKey(), s.appDefinition.Vendor,
