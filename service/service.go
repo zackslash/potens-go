@@ -176,7 +176,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
 	}
 
-	regResult, err := s.discoClient.Register(context.Background(), &discovery.RegisterRequest{
+	regResult, err := s.discoClient.Register(s.GetGrpcContext(), &discovery.RegisterRequest{
 		AppId:        appDef.GlobalAppID,
 		InstanceUuid: s.instanceID,
 		ServiceHost:  s.hostname,
@@ -198,7 +198,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 func (s *FortifiService) heartBeat() {
 	if s.currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
-			s.discoClient.HeartBeat(context.Background(), &discovery.HeartBeatRequest{
+			s.discoClient.HeartBeat(s.GetGrpcContext(), &discovery.HeartBeatRequest{
 				AppId:        s.appDefinition.GlobalAppID,
 				InstanceUuid: s.instanceID,
 			})
@@ -209,7 +209,7 @@ func (s *FortifiService) heartBeat() {
 
 // Online take your service online
 func (s *FortifiService) Online() error {
-	statusResult, err := s.discoClient.Status(context.Background(), &discovery.StatusRequest{
+	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
 		Status:       discovery.ServiceStatus_ONLINE,
@@ -232,7 +232,7 @@ func (s *FortifiService) Online() error {
 
 // Offline take your service offline
 func (s *FortifiService) Offline() error {
-	statusResult, err := s.discoClient.Status(context.Background(), &discovery.StatusRequest{
+	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
 		Status:       discovery.ServiceStatus_OFFLINE,
@@ -258,7 +258,7 @@ func (s *FortifiService) getCerts() error {
 		return err
 	}
 	c := imperium.NewImperiumClient(imperiumConnection)
-	response, err := c.Request(context.Background(), &imperium.CertificateRequest{
+	response, err := c.Request(s.GetGrpcContext(), &imperium.CertificateRequest{
 		AppId: s.appDefinition.GlobalAppID,
 	})
 	if err != nil {
