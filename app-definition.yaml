@@ -217,6 +217,49 @@ roles:
   - id: administrator
 
 #######################
+#      Integrate      #
+#######################
+# Integration points for other apps
+
+integration:
+  #Sidebar Panels on entity pages
+  panels:
+      #ID for this panel
+    - id: billing-panel
+      #Path to integrate into
+      hook: vendor/appid/customers/:fid
+      #Path to request panel
+      path: customer/{.fid}/panels/summary
+  #Page Navigation Items
+  menu_items:
+      #ID for this menu item
+    - id: billing-info
+      #Path to integrate into
+      hook: vendor/appid/customers/:fid
+      #Path to link to on click
+      path: customer/{.fid}/billing
+      #Launch style (full, integrated)
+      mode: integrated
+      #Text to display on menu
+      title: Billing
+      #Hover text for menu item
+      description: Billing Information
+  #Action buttons to show on the page
+  actions:
+      #ID for this action
+    - id: create-order
+      #Path to integrate into
+      hook: vendor/appid/customers/:fid
+      #Path to link to on click
+      path: customer/{.fid}/orders/create
+      #Action text
+      title: Create Order
+      #Action hover text
+      description: Create a new order for this customer
+      #Launch style (page, dialog, window, integrated)
+      mode: dialog
+
+#######################
 #    Configuration    #
 #######################
 
