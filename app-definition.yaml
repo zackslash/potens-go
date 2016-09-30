@@ -236,7 +236,7 @@ permissions:
 #######################
 # Integration points for other apps
 
-integration:
+integrations:
   #Sidebar Panels on entity pages
   panels:
       #ID for this panel

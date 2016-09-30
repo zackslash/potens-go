@@ -1,8 +1,9 @@
 package definition_test
 
 import (
-	"github.com/fortifi/potens-go/definition"
 	"testing"
+
+	"github.com/fortifi/potens-go/definition"
 )
 
 func TestReadYaml(t *testing.T) {
