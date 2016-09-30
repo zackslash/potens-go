@@ -32,6 +32,7 @@ type AppDefinition struct {
 	Queues                    []AppQueue
 	Notifications             []AppNotification
 	Roles                     []AppRole
+	Permissions               []AppPermission `yaml:"permissions"`
 	Config                    []AppConfig
 }
 
@@ -215,6 +216,23 @@ func (role *AppRole) IsBuiltIn() bool {
 // IsSameVendor returns true if the vendor for the role matches the vendor in the provided definition
 func (role *AppRole) IsSameVendor(appDef *AppDefinition) bool {
 	return role.VendorID(appDef) == appDef.Vendor
+}
+
+// AppPermissionMode Permission Request
+type AppPermissionMode string
+
+const (
+	// AppConfigModeString Require Permission
+	AppPermissionModeRequired AppPermissionMode = "require"
+	// AppPermissionModeOptional Optionally Require
+	AppPermissionModeOptional AppPermissionMode = "optional"
+)
+
+type AppPermission struct {
+	GlobalAppID string `yaml:"gaid"`
+	RPC         string
+	Mode        AppPermissionMode
+	Reason      string
 }
 
 // AppConfigType - Type of config value
