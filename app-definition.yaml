@@ -82,7 +82,7 @@ entities:
     description: Purpose of this entity type
     #Place {fid} for fid replacement within path
     #(optional)Relative path within your app to handle the view of this entity
-    path: /view/{fid}
+    path: view/{fid}
     #(optional)Path to retrieve hovercard data (slow hovercard urls may be disabled automatically)
     hovercard: /hover/{fid}
 
