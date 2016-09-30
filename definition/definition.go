@@ -34,6 +34,7 @@ type AppDefinition struct {
 	Roles                     []AppRole
 	Permissions               []AppPermission `yaml:"permissions"`
 	Config                    []AppConfig
+	Integrations              AppIntegrations
 }
 
 // AppType Application Type
@@ -267,6 +268,60 @@ type AppConfig struct {
 	Help        string
 	Type        AppConfigType
 	Values      []map[string]string
+}
+
+type AppIntegrationPanel struct {
+	ID   string
+	Hook string
+	Path string
+}
+
+// AppIntegrationMenuItemMode Launch mode for a integration menu item
+type AppIntegrationMenuItemMode string
+
+const (
+	// AppIntegrationMenuItemModeFull Redirect to a new page
+	AppIntegrationMenuItemModeFull AppIntegrationMenuItemMode = "full"
+	// AppIntegrationMenuItemModeIntegrated Open within the content area of the entity page
+	AppIntegrationMenuItemModeIntegrated AppIntegrationMenuItemMode = "integrated"
+)
+
+type AppIntegrationMenuItem struct {
+	ID          string
+	Hook        string
+	Path        string
+	Mode        AppIntegrationMenuItemMode
+	Title       string
+	Description string
+}
+
+// AppIntegrationActionMode Launch mode for a integration action
+type AppIntegrationActionMode string
+
+const (
+	// AppIntegrationActionModePage Redirect to a new page
+	AppIntegrationActionModePage AppIntegrationActionMode = "page"
+	// AppIntegrationActionModeDialog Open in a dialog
+	AppIntegrationActionModeDialog AppIntegrationActionMode = "dialog"
+	// AppIntegrationActionModeWindow Open in a new window
+	AppIntegrationActionModeWindow AppIntegrationActionMode = "window"
+	// AppIntegrationActionModeIntegrated Open within the content area of the entity page
+	AppIntegrationActionModeIntegrated AppIntegrationActionMode = "integrated"
+)
+
+type AppIntegrationAction struct {
+	ID          string
+	Hook        string
+	Path        string
+	Mode        AppIntegrationActionMode
+	Title       string
+	Description string
+}
+
+type AppIntegrations struct {
+	Panels    []AppIntegrationPanel
+	MenuItems []AppIntegrationMenuItem `yaml:"menu_items"`
+	Actions   []AppIntegrationAction
 }
 
 // FromConfig Populates your definition based on your app-definition.yaml
