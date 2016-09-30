@@ -217,6 +217,21 @@ roles:
   - id: administrator
 
 #######################
+#     Permissions     #
+#######################
+# Permissions required, or requested on other applications
+
+permissions:
+    # Global App ID to request information from
+  - gaid: vendor/appid
+    # Call you would like to make
+    rpc: list
+    #Permission mode: required, optional
+    mode: required
+    #Reason your app requires access to this call
+    reason: Pull out customer information to send emails
+
+#######################
 #      Integrate      #
 #######################
 # Integration points for other apps
