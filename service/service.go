@@ -196,48 +196,48 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 			log.Fatal(err)
 		}
 		s.fidentClient = fident.NewAuthClient(authconn)
-
-		// perform auth
-		ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: appDef.GlobalAppID})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// TODO: Verify challenge is from Fident using fident public key - !TO BE DISTRIBUTED! (?)
-		/*token, err := jwt.Parse(ac.Challenge, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-			}
-
-			pubKey, err := ioutil.ReadFile(rsaPubKeyLocation)
-			if err != nil {
-				return nil, fmt.Errorf("Unable to read public key")
-			}
-
-			key, err := jwt.ParseRSAPublicKeyFromPEM(pubKey)
-			if err != nil {
-				return nil, fmt.Errorf("Unable to parse public key")
-			}
-			return key, nil
-		})*/
-
-		// Sign challenge
-		challengeResponseToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-			"challenge_token": ac.Challenge,
-		})
-
-		response, err := challengeResponseToken.SignedString(s.pk)
-		if err != nil {
-			log.Fatal("Unable to generate challenge response")
-		}
-
-		authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: appDef.GlobalAppID, ChallengeResponse: response})
-		if err != nil {
-			return err
-		}
-
-		s.authToken = authres.Token
 	}
+
+	// perform auth
+	ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: appDef.GlobalAppID})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// TODO: Verify challenge is from Fident using fident public key - !TO BE DISTRIBUTED! (?)
+	/*token, err := jwt.Parse(ac.Challenge, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		pubKey, err := ioutil.ReadFile(rsaPubKeyLocation)
+		if err != nil {
+			return nil, fmt.Errorf("Unable to read public key")
+		}
+
+		key, err := jwt.ParseRSAPublicKeyFromPEM(pubKey)
+		if err != nil {
+			return nil, fmt.Errorf("Unable to parse public key")
+		}
+		return key, nil
+	})*/
+
+	// Sign challenge
+	challengeResponseToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"challenge_token": ac.Challenge,
+	})
+
+	response, err := challengeResponseToken.SignedString(s.pk)
+	if err != nil {
+		log.Fatal("Unable to generate challenge response")
+	}
+
+	authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: appDef.GlobalAppID, ChallengeResponse: response})
+	if err != nil {
+		return err
+	}
+
+	s.authToken = authres.Token
 
 	if s.discoClient == nil {
 		discoveryConn, err := grpc.Dial(s.discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
