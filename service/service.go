@@ -1,7 +1,10 @@
 package service
 
 import (
+	"crypto/rsa"
 	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"flag"
 	"log"
@@ -17,6 +20,8 @@ import (
 
 	"os"
 
+	"github.com/dgrijalva/jwt-go"
+	"github.com/fident/proto-go/fident"
 	"github.com/fortifi/portcullis-go/keys"
 	"github.com/fortifi/potens-go/definition"
 	"github.com/fortifi/potens-go/identity"
@@ -37,6 +42,7 @@ type FortifiService struct {
 	appIdentity         *identity.AppIdentity
 	port                int32
 	discoClient         discovery.DiscoveryClient
+	fidentClient        fident.AuthClient
 	imperiumCertificate []byte
 	imperiumKey         []byte
 	hostname            string
@@ -47,6 +53,8 @@ type FortifiService struct {
 	imperiumService  string
 	discoveryService string
 	fidentService    string
+	authToken        string
+	pk               *rsa.PrivateKey
 }
 
 func (s *FortifiService) parseEnv() {
@@ -149,6 +157,21 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	s.appDefinition = appDef
 	s.appIdentity = appIdent
 
+	block, _ := pem.Decode([]byte(appIdent.PrivateKey))
+	if block == nil {
+		log.Fatal("No RSA private key found")
+	}
+
+	var key *rsa.PrivateKey
+	if block.Type == "RSA PRIVATE KEY" {
+		rsa, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			log.Fatal("Unable to read RSA private key")
+		}
+		key = rsa
+	}
+	s.pk = key
+
 	log.Print("Starting App: " + appDef.GlobalAppID + " - " + appDef.Name)
 	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
 
@@ -165,6 +188,55 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	err := s.getCerts()
 	if err != nil {
 		return err
+	}
+
+	if s.fidentClient == nil {
+		authconn, err := grpc.Dial(s.fidentService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		if err != nil {
+			log.Fatal(err)
+		}
+		s.fidentClient = fident.NewAuthClient(authconn)
+
+		// perform auth
+		ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: appDef.GlobalAppID})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// TODO: Verify challenge is from Fident using fident public key - !TO BE DISTRIBUTED! (?)
+		/*token, err := jwt.Parse(ac.Challenge, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			}
+
+			pubKey, err := ioutil.ReadFile(rsaPubKeyLocation)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to read public key")
+			}
+
+			key, err := jwt.ParseRSAPublicKeyFromPEM(pubKey)
+			if err != nil {
+				return nil, fmt.Errorf("Unable to parse public key")
+			}
+			return key, nil
+		})*/
+
+		// Sign challenge
+		challengeResponseToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+			"challenge_token": ac.Challenge,
+		})
+
+		response, err := challengeResponseToken.SignedString(s.pk)
+		if err != nil {
+			log.Fatal("Unable to generate challenge response")
+		}
+
+		authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: appDef.GlobalAppID, ChallengeResponse: response})
+		if err != nil {
+			return err
+		}
+
+		s.authToken = authres.Token
 	}
 
 	if s.discoClient == nil {

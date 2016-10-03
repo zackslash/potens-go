@@ -4,6 +4,11 @@ import:
   subpackages:
   - discovery
   - imperium
+- package: github.com/fident/proto-go
+  subpackages:
+  - fident
+- package: github.com/dgrijalva/jwt-go
+  version: ~3.0.0
 - package: github.com/satori/go.uuid
   version: ~1.1.0
 - package: golang.org/x/net

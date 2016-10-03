@@ -1,6 +1,12 @@
-hash: d8fecf46e2d0a74b5187faf8df04b0c7d47763fa2c07f4ace158cbbe669486a7
-updated: 2016-09-30T15:19:17.507087756+01:00
+hash: 77daabb0e6ba44dc1349d519f2705691fb041ac0e7fbbab6a7bbcdaf0ad025ae
+updated: 2016-10-03T11:45:03.115623546+01:00
 imports:
+- name: github.com/dgrijalva/jwt-go
+  version: d2709f9f1f31ebcda9651b03077758c1f3a0018c
+- name: github.com/fident/proto-go
+  version: 85e2092894d2c97d904b8452a3097613f47ce177
+  subpackages:
+  - fident
 - name: github.com/fortifi/portcullis-go
   version: 039a42d518f321348081d31a5a1cf4baf147d6e8
   subpackages:
