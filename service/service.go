@@ -25,12 +25,14 @@ import (
 	"github.com/fortifi/portcullis-go/keys"
 	"github.com/fortifi/potens-go/definition"
 	"github.com/fortifi/potens-go/identity"
+	"github.com/fortifi/proto-go/appregistry"
 	"github.com/fortifi/proto-go/discovery"
 	"github.com/fortifi/proto-go/imperium"
 	"github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var (
@@ -42,6 +44,7 @@ type FortifiService struct {
 	appIdentity         *identity.AppIdentity
 	port                int32
 	discoClient         discovery.DiscoveryClient
+	regClient           appregistry.AppRegistryClient
 	fidentClient        fident.AuthClient
 	imperiumCertificate []byte
 	imperiumKey         []byte
@@ -52,6 +55,7 @@ type FortifiService struct {
 	parsedEnv        bool
 	imperiumService  string
 	discoveryService string
+	registryService  string
 	fidentService    string
 	authToken        string
 	pk               *rsa.PrivateKey
@@ -86,6 +90,18 @@ func (s *FortifiService) parseEnv() {
 		s.imperiumService += ":" + defaultPort
 	} else {
 		s.imperiumService += ":" + imperiumPort
+	}
+
+	s.registryService = os.Getenv("FORT_REGISTRY_LOCATION")
+	if s.registryService == "" {
+		s.registryService = "registry-fortifi." + fortDomain
+	}
+
+	registryPort := os.Getenv("FORT_REGISTRY_PORT")
+	if registryPort == "" {
+		s.registryService += ":" + defaultPort
+	} else {
+		s.registryService += ":" + registryPort
 	}
 
 	s.fidentService = os.Getenv("FIDENT_LOCATION")
@@ -248,6 +264,29 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
 	}
+
+	if s.regClient == nil {
+		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		s.regClient = appregistry.NewAppRegistryClient(regConn)
+	}
+
+	//TODO: Remove this once CLI tools are available
+	appDefYaml, err := yaml.Marshal(appDef)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s.regClient.RegisterApp(s.GetGrpcContext(), &appregistry.AppRegisterRequest{
+		VendorId:       appDef.Vendor,
+		Id:             appDef.AppID,
+		VendorSecret:   "",
+		DefinitionYaml: string(appDefYaml),
+	})
 
 	regResult, err := s.discoClient.Register(s.GetGrpcContext(), &discovery.RegisterRequest{
 		AppId:        appDef.GlobalAppID,
