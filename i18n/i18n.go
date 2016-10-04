@@ -1,4 +1,4 @@
-package l10n
+package i18n
 
 type Translatable struct {
 	defaultLanguage string

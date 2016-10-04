@@ -1,20 +1,20 @@
-package l10n_test
+package i18n_test
 
 import (
 	"testing"
 
-	"github.com/fortifi/potens-go/l10n"
+	"github.com/fortifi/potens-go/i18n"
 )
 
 func TestEmpty(t *testing.T) {
-	str := &l10n.Translatable{DefaultLanguage: "en", Key: "hello"}
+	str := i18n.NewTranslatable(i18n.Translations{})
 	if str.Get("en") != "" {
 		t.Error("Got a translation from never never lang")
 	}
 }
 
 func TestNoDefault(t *testing.T) {
-	str := &l10n.Translatable{Key: "hello"}
+	str := i18n.NewTranslatable(i18n.Translations{})
 	str.Set("en", "Hi")
 	if str.Get("fr") != "Hi" {
 		t.Error("Unable to use EN default")
@@ -22,7 +22,7 @@ func TestNoDefault(t *testing.T) {
 }
 
 func TestDefaults(t *testing.T) {
-	str := &l10n.Translatable{DefaultLanguage: "en", Key: "hello"}
+	str := i18n.NewTranslatable(i18n.Translations{})
 	str.SetDefaultLanguage("en")
 	str.Set("en", "Hello")
 	if "Hello" != str.Get("en") {

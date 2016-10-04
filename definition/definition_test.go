@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/fortifi/potens-go/definition"
-	"github.com/fortifi/potens-go/l10n"
+	"github.com/fortifi/potens-go/i18n"
 )
 
 func TestReadYaml(t *testing.T) {
@@ -14,15 +14,15 @@ func TestReadYaml(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if l10n.NewTranslatable(def.Name).Get("fr") != "Les clients" {
+	if i18n.NewTranslatable(def.Name).Get("fr") != "Les clients" {
 		t.Error("Failed to read translation")
 	}
 
-	if l10n.NewTranslatable(def.Name).Get("en") != "Customers" {
+	if i18n.NewTranslatable(def.Name).Get("en") != "Customers" {
 		t.Error("Failed to read translation")
 	}
 
-	if l10n.NewTranslatable(def.Name).Get("eeewf") != "Customers" {
+	if i18n.NewTranslatable(def.Name).Get("eeewf") != "Customers" {
 		t.Error("Failed to read default")
 	}
 }
