@@ -1,11 +1,18 @@
 package i18n
 
+type Translations map[string]string
+
+// NewTranslations Create a new translations object
+func NewTranslations(defaultValue string) Translations {
+	t := make(Translations)
+	t["en"] = defaultValue
+	return t
+}
+
 type Translatable struct {
 	defaultLanguage string
 	translations    Translations
 }
-
-type Translations map[string]string
 
 // NewTranslatable Create a new translatable object
 func NewTranslatable(translations Translations) *Translatable {

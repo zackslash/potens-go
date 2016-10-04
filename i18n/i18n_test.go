@@ -6,6 +6,13 @@ import (
 	"github.com/fortifi/potens-go/i18n"
 )
 
+func TestNewTranslations(t *testing.T) {
+	str := i18n.NewTranslatable(i18n.NewTranslations("Hi Dave"))
+	if str.Get("en") != "Hi Dave" {
+		t.Error("Unable to initialise translations")
+	}
+}
+
 func TestEmpty(t *testing.T) {
 	str := i18n.NewTranslatable(i18n.Translations{})
 	if str.Get("en") != "" {
