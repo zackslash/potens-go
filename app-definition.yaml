@@ -13,10 +13,10 @@ config_version: 1.0
 version: 1.0
 
 #Your vendor ID
-vendor: fortifi-uk
+vendor: vendorid
 
 #ID of your app
-app_id: customers
+app_id: appid
 
 #The group this app belongs to (used for micro apps)
 group:
@@ -35,10 +35,15 @@ app_type: employee
 #######################
 
 #Display name for your app
-name: Customers
+name:
+  en: Customers
+  fr: Les clients
+  de: Kundschaft
 
 #Description of the app, shown with the app in menus and summaries
-description: Management of base customer information
+description:
+  en: Management of base customer information
+  fr: Gestion de l'information à la clientèle de base
 
 #fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
 icon: social:group
@@ -49,9 +54,13 @@ icon: social:group
 navigation:
   - id: list-customers
     # Menu Item Text
-    name: List Customers
+    name:
+      en: List Customers
+      fr: Liste clients
     # Menu Item Help Text (e.g. Tooltip, Sub Header)
-    description: Show all your customers
+    description:
+      en: Show all your customers
+      fr: Montrer tous vos clients
     #fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
     icon: social:group
     #Path to follow (relative to your application)
@@ -75,11 +84,17 @@ entities:
   #Type (2 Char) - Unique Type for this application
   CS:
     #Name of the entity
-    name: Customer
+    name:
+      en: Customer
+      fr: Client
     #Plural version of the entity
-    plural: Customers
+    plural:
+      en: Customers
+      fr: Les clients
     #Description of the entity
-    description: Purpose of this entity type
+    description:
+      en: Purpose of this entity type
+      fr: But de ce type d'entité
     #Place {fid} for fid replacement within path
     #(optional)Relative path within your app to handle the view of this entity
     path: view/{fid}
@@ -99,7 +114,8 @@ listener:
 
   #Configuration for your repository (see docs)
   config:
-    - name: url
+    - name:
+        en: url
       value: http://events.yourdomain.com/fortifi
 
 #######################
@@ -110,7 +126,9 @@ quick_actions:
     #Unique ID (unique to your app)
   - id: create-customer
     #Display name - Will be the only text visible for this action
-    name: Create a Customer
+    name:
+      en: Create a Customer
+      fr: Créer un client
     #Icon to display
     icon: social:person-add
     #Launch style (page, dialog, window)
@@ -130,9 +148,13 @@ search_actions:
     #Unique ID (unique to your app)
   - id: new-customers
     #Display name
-    name: New Customers
+    name:
+      en: New Customers
+      fr: nouveaux clients
     #Description to show with the search result
-    description: Display the most recently joined customers
+    description:
+      en: Display the most recently joined customers
+      fr: Afficher les clients les plus récemment adhéré
     #Icon to display
     icon: social:group-add
     #Path to complete this action relative to your app path
@@ -156,7 +178,9 @@ queues:
     #Unique ID (unique to your app)
   - id: pending-customers
     #Display name
-    name: Pending Customers
+    name:
+      en: Pending Customers
+      fr: Les clients en attente
     #Icon to display
     icon: social:person-outline
     #Path to the handler for this queue
@@ -176,9 +200,13 @@ notifications:
     #Unique ID (unique to your app)
   - id: new-customer
     #Display name
-    name: New Customers
+    name:
+      en: New Customers
+      fr: nouveaux clients
     #Information about when/how this event is triggered
-    description: Triggered when a new customer has been created
+    description:
+      en: Triggered when a new customer has been created
+      fr: Déclenché quand un nouveau client a été créé
     #Icon to display
     icon: social:person-add
     #Attributes of the notification
@@ -202,9 +230,13 @@ roles:
     # ID for this role, should be specified as <vendor>/<app-id>/<role-id> (role ID unique to this app)
   - id: vendor/app-id/customer-manager
     #Name of this role
-    name: Customer Manager
+    name:
+      en: Customer Manager
+      fr: Responsable Clientèle
     #Description of this role
-    description: An employee who managed customers
+    description:
+      en: An employee who managed customers
+      fr: Un employé qui a réussi clients
 
   # Can be shortened to //role-id for dynamic completion of vendor and app-id
   - id: //customer-manager
@@ -229,7 +261,9 @@ permissions:
     #Permission mode: required, optional
     mode: required
     #Reason your app requires access to this call
-    reason: Pull out customer information to send emails
+    reason:
+      en: Pull out customer information to send emails
+      fr: Tirez sur les informations client pour envoyer des emails
 
 #######################
 #      Integrate      #
@@ -256,9 +290,13 @@ integrations:
       #Launch style (full, integrated)
       mode: integrated
       #Text to display on menu
-      title: Billing
+      title:
+        en: Billing
+        fr: Facturation
       #Hover text for menu item
-      description: Billing Information
+      description:
+        en: Billing Information
+        fr: détails de facturation
   #Action buttons to show on the page
   actions:
       #ID for this action
@@ -268,9 +306,13 @@ integrations:
       #Path to link to on click
       path: customer/{.fid}/orders/create
       #Action text
-      title: Create Order
+      title:
+        en: Create Order
+        fr: Créer une commande
       #Action hover text
-      description: Create a new order for this customer
+      description:
+        en: Create a new order for this customer
+        fr: Créer une nouvelle commande pour ce client
       #Launch style (page, dialog, window, integrated)
       mode: dialog
 
@@ -285,38 +327,69 @@ config:
     #ID for this config item, used in setting and retrieving
   - id: external-link
     #Display name
-    name: External Link
+    name:
+      en: External Link
+      fr: lien externe
     #Description
-    description: URI to send user to when clicking on an external reference (opens in a new window)
+    description:
+      en: URI to send user to when clicking on an external reference (opens in a new window)
+      fr: URI pour envoyer à l'utilisateur en cliquant sur une référence externe (ouvre dans une nouvelle fenêtre)
     #Type of value (array:comma, array:line, string, boolean, integer, float, json, uri, options)
     type: uri
 
     #Other Examples
   - id: require-email-verification
-    name: Require Email Verification
-    description: Require email verification before a customer can log in.
+    name:
+      en: Require Email Verification
+      fr: Exiger Email Vérification
+    description:
+      en: Require email verification before a customer can log in.
+      fr: Exiger un e-mail avant qu'un client peut se connecter.
     type: boolean
     default: false
     values:
-     - true: Require email verification
-     - false: Don't require email verification
+     - true:
+          en: Require email verification
+          fr: Exiger un email
+     - false:
+          en: Don't require email verification
+          fr: Ne pas exiger une vérification électronique
 
   - id: require-approval
-    name: Require Approval
-    description: Require administrators to approve new accounts.
-    help: "Newly registered accounts can either be placed into a manual approval queue for administrative review, or automatically activated immediately. The approval queue is enabled by default because it gives you greater control over who can register an account and access."
-    note: "NOTE: Before you disable the queue, make sure {{email-domains}} is configured correctly!"
+    name:
+      en: Require Approval
+      fr: Exiger Approbation
+    description:
+      en: Require administrators to approve new accounts.
+      fr: Exiger des administrateurs d'approuver de nouveaux comptes.
+    help:
+      en: "Newly registered accounts can either be placed into a manual approval queue for administrative review, or automatically activated immediately. The approval queue is enabled by default because it gives you greater control over who can register an account and access."
+      fr: "Comptes nouvellement inscrits peuvent soit être placés dans une file d'attente d'approbation manuelle de révision administrative, ou automatiquement activé immédiatement. La file d'attente d'approbation est activée par défaut car il vous donne un plus grand contrôle sur qui peut créer un compte et l'accès."
+    note:
+      en: "NOTE: Before you disable the queue, make sure {{email-domains}} is configured correctly!"
+      fr: "NOTE: Avant de désactiver la file d'attente, assurez-vous que {{email-domaines}} est correctement configuré!"
     type: boolean
     default: true
     values:
-     - true: Require Administrators to Approve Accounts
-     - false: Don't require manual approval
+     - true:
+        en: Require Administrators to Approve Accounts
+        fr: Exiger des administrateurs d'approuver les comptes
+     - false:
+        en: Don't require manual approval
+        fr: Ne nécessite pas l'approbation manuelle
 
   - id: email-domains
-    name: Email Domains
-    description: Only allow registration from particular domains.
-    help: |
-      You can restrict allowed email addresses to certain domains (like yourcompany.com) by setting a list of allowed domains here.
-      Users will only be allowed to register using email addresses at one of the domains, and will only be able to add new email addresses for these domains. If you configure this, it implies {{require-email-verification}}.
-      You should omit the @ from domains. Note that the domain must match exactly. If you allow yourcompany.com, that permits joe@yourcompany.com but rejects joe@mail.yourcompany.com.
+    name:
+      en: Email Domains
+      fr: Domaines de messagerie
+    description:
+      en: Only allow registration from particular domains.
+      fr: Seulement permettre l'enregistrement de domaines particuliers.
+    help:
+      en: "You can restrict allowed email addresses to certain domains (like yourcompany.com) by setting a list of allowed domains here.
+          Users will only be allowed to register using email addresses at one of the domains, and will only be able to add new email addresses for these domains. If you configure this, it implies {{require-email-verification}}.
+          You should omit the @ from domains. Note that the domain must match exactly. If you allow yourcompany.com, that permits joe@yourcompany.com but rejects joe@mail.yourcompany.com."
+      fr: "Vous pouvez restreindre les adresses électroniques autorisées à certains domaines (comme yourcompany.com) en définissant une liste de domaines autorisés ici.
+          Les utilisateurs ne seront autorisés à enregistrer à l'aide des adresses e-mail à l'un des domaines, et ne seront en mesure d'ajouter de nouvelles adresses électroniques pour ces domaines. Si vous configurez ce, elle implique {{require-mail de vérification}}.
+          Vous devez omettre le @ de domaines. Notez que le nom de domaine doit correspondre exactement. Si vous autorisez yourcompany.com, qui permet joe@yourcompany.com mais rejette joe@mail.yourcompany.com."
     type: array:line

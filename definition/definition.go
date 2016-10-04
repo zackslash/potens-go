@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/fortifi/potens-go/l10n"
+
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -19,8 +21,8 @@ type AppDefinition struct {
 	Category                  string
 	Priority                  int32
 	AppType                   AppType `yaml:"app_type"`
-	Name                      string
-	Description               string
+	Name                      l10n.Translations
+	Description               l10n.Translations
 	icon                      string
 	AdvancedNotificationsPath string `yaml:"advanced_notifications_path"`
 	AdvancedConfigPath        string `yaml:"advanced_config_path"`
@@ -55,8 +57,8 @@ const (
 // AppNavigation Application Navigation ITem
 type AppNavigation struct {
 	ID          string
-	Name        string
-	Description string
+	Name        l10n.Translations
+	Description l10n.Translations
 	Icon        string
 	Path        string
 	Roles       []string
@@ -71,9 +73,9 @@ type AppEntities struct {
 
 // Entity Definition of a single FDL data type
 type Entity struct {
-	Name        string
-	Plural      string
-	Description string
+	Name        l10n.Translations
+	Plural      l10n.Translations
+	Description l10n.Translations
 	Path        string
 	Hovercard   string
 }
@@ -100,7 +102,7 @@ type AppListener struct {
 
 // AppListenerConfig Config items for listener
 type AppListenerConfig struct {
-	Name  string
+	Name  l10n.Translations
 	Value string
 }
 
@@ -119,7 +121,7 @@ const (
 // AppQuickAction Quick Action provided by your app
 type AppQuickAction struct {
 	ID    string
-	Name  string
+	Name  l10n.Translations
 	Icon  string
 	mode  QuickActionMode
 	Path  string
@@ -129,8 +131,8 @@ type AppQuickAction struct {
 // AppSearchAction Search Action provided by your app
 type AppSearchAction struct {
 	ID          string
-	Name        string
-	Description string
+	Name        l10n.Translations
+	Description l10n.Translations
 	Icon        string
 	Path        string
 	Roles       []string
@@ -140,7 +142,7 @@ type AppSearchAction struct {
 // AppQueue Queue provided by your app
 type AppQueue struct {
 	ID    string
-	Name  string
+	Name  l10n.Translations
 	Icon  string
 	Path  string
 	Roles []string
@@ -149,8 +151,8 @@ type AppQueue struct {
 // AppNotification notification provided by your app
 type AppNotification struct {
 	ID          string
-	Name        string
-	Description string
+	Name        l10n.Translations
+	Description l10n.Translations
 	Icon        string
 	Roles       []string
 	Attributes  []AppNotificationAttribute
@@ -179,8 +181,8 @@ type AppNotificationAttribute struct {
 // AppRole Roles provided by your application
 type AppRole struct {
 	ID          string
-	Name        string
-	Description string
+	Name        l10n.Translations
+	Description l10n.Translations
 }
 
 // VendorID Retrieves the vendor ID for this role, empty for a global role
@@ -233,7 +235,7 @@ type AppPermission struct {
 	GlobalAppID string `yaml:"gaid"`
 	RPC         string
 	Mode        AppPermissionMode
-	Reason      string
+	Reason      l10n.Translations
 }
 
 // AppConfigType - Type of config value
@@ -263,11 +265,12 @@ const (
 // AppConfig Configurable item for your app per organisation
 type AppConfig struct {
 	ID          string
-	Name        string
-	Description string
-	Help        string
+	Name        l10n.Translations
+	Description l10n.Translations
+	Note        l10n.Translations
+	Help        l10n.Translations
 	Type        AppConfigType
-	Values      []map[string]string
+	Values      []map[string]l10n.Translations
 }
 
 type AppIntegrationPanel struct {
@@ -291,8 +294,8 @@ type AppIntegrationMenuItem struct {
 	Hook        string
 	Path        string
 	Mode        AppIntegrationMenuItemMode
-	Title       string
-	Description string
+	Title       l10n.Translations
+	Description l10n.Translations
 }
 
 // AppIntegrationActionMode Launch mode for a integration action
@@ -314,8 +317,8 @@ type AppIntegrationAction struct {
 	Hook        string
 	Path        string
 	Mode        AppIntegrationActionMode
-	Title       string
-	Description string
+	Title       l10n.Translations
+	Description l10n.Translations
 }
 
 type AppIntegrations struct {
