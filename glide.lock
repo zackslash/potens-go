@@ -1,5 +1,5 @@
-hash: a41cd5839702bd772263011f52eb02113ffeac7fef1f56c3d15f25f5771aecb1
-updated: 2016-10-03T13:47:12.093907+01:00
+hash: 77daabb0e6ba44dc1349d519f2705691fb041ac0e7fbbab6a7bbcdaf0ad025ae
+updated: 2016-10-04T10:41:26.712072147+01:00
 imports:
 - name: github.com/dgrijalva/jwt-go
   version: d2709f9f1f31ebcda9651b03077758c1f3a0018c
@@ -12,19 +12,20 @@ imports:
   subpackages:
   - keys
 - name: github.com/fortifi/proto-go
-  version: 2b60586116dcc460a8e676f299b9b9bb74787f50
+  version: 2155e6aaa364603e1fd8bc69b6b885c08b9240d8
   subpackages:
   - discovery
   - imperium
+  - appregistry
 - name: github.com/golang/protobuf
-  version: 87c000235d3d852c1628dc9490cd21ab36a7d69f
+  version: df1d3ca07d2d07bba352d5b73c4313b4e2a6203e
   subpackages:
   - proto
   - ptypes/timestamp
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
-  version: a333c534c871727fb95745870e8b98a69447f2ce
+  version: ffe101cce3477a6c6d8f0754d103bb0a84ec1266
   subpackages:
   - context
   - http2
@@ -34,7 +35,7 @@ imports:
   - lex/httplex
   - internal/timeseries
 - name: google.golang.org/grpc
-  version: 0032a855ba5c8a3c8e0d71c2deef354b70af1584
+  version: b1a2821ca5a4fd6b6e48ddfbb7d6d7584d839d21
   subpackages:
   - credentials
   - metadata

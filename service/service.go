@@ -24,6 +24,7 @@ import (
 	"github.com/fident/proto-go/fident"
 	"github.com/fortifi/portcullis-go/keys"
 	"github.com/fortifi/potens-go/definition"
+	"github.com/fortifi/potens-go/i18n"
 	"github.com/fortifi/potens-go/identity"
 	"github.com/fortifi/proto-go/appregistry"
 	"github.com/fortifi/proto-go/discovery"
@@ -188,7 +189,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	}
 	s.pk = key
 
-	log.Print("Starting App: " + appDef.GlobalAppID + " - " + appDef.Name)
+	log.Print("Starting App: " + appDef.GlobalAppID + " - " + i18n.NewTranslatable(appDef.Name).Get("en"))
 	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
 
 	flag.Parse()
