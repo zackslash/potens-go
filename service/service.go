@@ -26,9 +26,9 @@ import (
 	"github.com/fortifi/potens-go/definition"
 	"github.com/fortifi/potens-go/i18n"
 	"github.com/fortifi/potens-go/identity"
-	"github.com/fortifi/proto-go/appregistry"
 	"github.com/fortifi/proto-go/discovery"
 	"github.com/fortifi/proto-go/imperium"
+	"github.com/fortifi/proto-go/undercroft"
 	"github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -45,7 +45,7 @@ type FortifiService struct {
 	appIdentity         *identity.AppIdentity
 	port                int32
 	discoClient         discovery.DiscoveryClient
-	regClient           appregistry.AppRegistryClient
+	undercroftClient    undercroft.UndercroftClient
 	fidentClient        fident.AuthClient
 	imperiumCertificate []byte
 	imperiumKey         []byte
@@ -268,14 +268,14 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
 	}
 
-	if s.regClient == nil {
+	if s.undercroftClient == nil {
 		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		s.regClient = appregistry.NewAppRegistryClient(regConn)
+		s.undercroftClient = undercroft.NewUndercroftClient(regConn)
 	}
 
 	//TODO: Remove this once CLI tools are available
@@ -284,7 +284,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		log.Fatal(err)
 	}
 
-	s.regClient.RegisterApp(s.GetGrpcContext(), &appregistry.AppRegisterRequest{
+	s.undercroftClient.RegisterApp(s.GetGrpcContext(), &undercroft.AppRegisterRequest{
 		VendorId:       appDef.Vendor,
 		Id:             appDef.AppID,
 		VendorSecret:   "",
