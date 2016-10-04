@@ -11,6 +11,7 @@ type AppIdentity struct {
 	IdentityID   string `json:"identity_id"`
 	AppID        string `json:"service_name"`
 	PrivateKey   string `json:"private_key"`
+	KeyHandle    string `json:"key_handle"`
 }
 
 // FromJSONFile Populates your identity based on your app-identity.json

@@ -60,6 +60,7 @@ type FortifiService struct {
 	fidentService    string
 	authToken        string
 	pk               *rsa.PrivateKey
+	kh               string
 }
 
 func (s *FortifiService) parseEnv() {
@@ -188,6 +189,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		key = rsa
 	}
 	s.pk = key
+	s.kh = s.appIdentity.KeyHandle
 
 	log.Print("Starting App: " + appDef.GlobalAppID + " - " + i18n.NewTranslatable(appDef.Name).Get("en"))
 	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
