@@ -10,7 +10,6 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	"runtime"
 	"strconv"
 	"time"
 
@@ -19,6 +18,8 @@ import (
 	"path"
 
 	"os"
+
+	"path/filepath"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fident/proto-go/fident"
@@ -130,8 +131,11 @@ func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClien
 }
 
 func (s *FortifiService) relPath(file string) string {
-	_, filename, _, _ := runtime.Caller(2)
-	return path.Join(path.Dir(filename), file)
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return path.Join(dir, file)
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
