@@ -209,6 +209,10 @@ notifications:
       fr: Déclenché quand un nouveau client a été créé
     #Icon to display
     icon: social:person-add
+    #Path to link notification to
+    path: customers/{{.AttrName}}
+    #Message to display
+    message: Customer {{.AttrName}} has been created
     #Attributes of the notification
     attributes:
         #Attribute Key
