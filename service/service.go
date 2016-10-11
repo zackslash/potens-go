@@ -126,6 +126,10 @@ func (s *FortifiService) SetPort(port int32) {
 	s.port = port
 }
 
+func (s *FortifiService) GetPort() int32 {
+	return s.port
+}
+
 func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
 	s.discoClient = discoClient
 }
