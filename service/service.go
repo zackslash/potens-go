@@ -141,7 +141,7 @@ func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClien
 func (s *FortifiService) relPath(file string) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		s.Logger.Fatal(err)
+		s.Logger.Fatal(err.Error())
 	}
 	return path.Join(dir, file)
 }
