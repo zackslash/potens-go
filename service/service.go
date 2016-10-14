@@ -217,8 +217,8 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (*For
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
 func (s *FortifiService) Start() error {
 
-	s.Logger.Info("Starting App: " + s.appDefinition.GlobalAppID + " - " + i18n.NewTranslatable(s.appDefinition.Name).Get("en"))
-	s.Logger.Info("Authing with: " + s.appIdentity.IdentityID + " - " + s.appIdentity.IdentityType)
+	s.Logger.Info("Starting App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
+	s.Logger.Info("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
 
 	flag.Parse()
 	log.SetFlags(0)
