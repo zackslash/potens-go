@@ -244,7 +244,7 @@ func (s *FortifiService) Start(collector zipkin.Collector) error {
 		if err != nil {
 			return err
 		}
-		span := s.Tracer.StartSpan("Start")
+		span = s.Tracer.StartSpan("ServiceStart")
 		defer span.Finish()
 	}
 
