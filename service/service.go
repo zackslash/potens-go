@@ -234,7 +234,7 @@ func (s *FortifiService) Start() error {
 	if s.fidentClient == nil {
 		authconn, err := grpc.Dial(s.fidentService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 		if err != nil {
-			s.Logger.Fatal(err)
+			s.Logger.Fatal(err.Error())
 		}
 		s.fidentClient = fident.NewAuthClient(authconn)
 	}
@@ -242,7 +242,7 @@ func (s *FortifiService) Start() error {
 	// perform auth
 	ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: s.appDefinition.GlobalAppID})
 	if err != nil {
-		s.Logger.Fatal(err)
+		s.Logger.Fatal(err.Error())
 	}
 
 	// TODO: Verify challenge is from Fident using fident public key - !TO BE DISTRIBUTED! (?)
@@ -284,7 +284,7 @@ func (s *FortifiService) Start() error {
 		discoveryConn, err := grpc.Dial(s.discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
-			s.Logger.Fatal(err)
+			s.Logger.Fatal(err.Error())
 		}
 
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
@@ -294,7 +294,7 @@ func (s *FortifiService) Start() error {
 		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
-			s.Logger.Fatal(err)
+			s.Logger.Fatal(err.Error())
 		}
 
 		s.undercroftClient = undercroft.NewUndercroftClient(regConn)
@@ -303,7 +303,7 @@ func (s *FortifiService) Start() error {
 	//TODO: Remove this once CLI tools are available
 	appDefYaml, err := yaml.Marshal(s.appDefinition)
 	if err != nil {
-		s.Logger.Fatal(err)
+		s.Logger.Fatal(err.Error())
 	}
 
 	s.undercroftClient.RegisterApp(s.GetGrpcContext(), &undercroft.AppRegisterRequest{
@@ -321,7 +321,7 @@ func (s *FortifiService) Start() error {
 	})
 
 	if err != nil {
-		s.Logger.Fatal(err)
+		s.Logger.Fatal(err.Error())
 	}
 
 	if !regResult.Recorded {
