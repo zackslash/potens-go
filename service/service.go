@@ -30,6 +30,8 @@ import (
 	"github.com/fortifi/proto-go/discovery"
 	"github.com/fortifi/proto-go/imperium"
 	"github.com/fortifi/proto-go/undercroft"
+	"github.com/opentracing/opentracing-go"
+	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/satori/go.uuid"
 	"github.com/uber-go/zap"
 	"google.golang.org/grpc"
@@ -58,6 +60,9 @@ type FortifiService struct {
 
 	//Logger used for standard logging
 	Logger zap.Logger
+
+	//Tracer open tracer
+	Tracer opentracing.Tracer
 
 	parsedEnv        bool
 	imperiumService  string
@@ -215,7 +220,10 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *FortifiService) Start() error {
+func (s *FortifiService) Start(collector *zipkin.Collector) error {
+
+	var err error
+	var span opentracing.Span
 
 	s.Logger.Info("Starting App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
 	s.Logger.Info("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
@@ -230,9 +238,27 @@ func (s *FortifiService) Start() error {
 		s.port = int32(rand.Intn(maxPort-minPort) + minPort)
 	}
 
-	err := s.getCerts()
+	if collector != nil {
+		recorder := zipkin.NewRecorder(collector, false, "0.0.0.0:"+strconv.FormatInt(int64(s.port), 10), s.appDefinition.GlobalAppID)
+		s.Tracer, err = zipkin.NewTracer(recorder)
+		if err != nil {
+			return err
+		}
+		span := s.Tracer.StartSpan("Start")
+		defer span.Finish()
+	}
+
+	if span != nil {
+		span.LogEvent("Starting")
+	}
+
+	err = s.getCerts()
 	if err != nil {
 		return err
+	}
+
+	if span != nil {
+		span.LogEvent("GotCerts")
 	}
 
 	if s.fidentClient == nil {
@@ -282,6 +308,10 @@ func (s *FortifiService) Start() error {
 		return err
 	}
 
+	if span != nil {
+		span.LogEvent("Authed")
+	}
+
 	s.authToken = authres.Token
 
 	if s.discoClient == nil {
@@ -292,6 +322,9 @@ func (s *FortifiService) Start() error {
 		}
 
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
+		if span != nil {
+			span.LogEvent("ConnectDiscovery")
+		}
 	}
 
 	if s.undercroftClient == nil {
@@ -302,6 +335,9 @@ func (s *FortifiService) Start() error {
 		}
 
 		s.undercroftClient = undercroft.NewUndercroftClient(regConn)
+		if span != nil {
+			span.LogEvent("ConnectUndercroft")
+		}
 	}
 
 	//TODO: Remove this once CLI tools are available
@@ -317,6 +353,10 @@ func (s *FortifiService) Start() error {
 		DefinitionYaml: string(appDefYaml),
 	})
 
+	if span != nil {
+		span.LogEvent("undercroft.RegisterApp")
+	}
+
 	regResult, err := s.discoClient.Register(s.GetGrpcContext(), &discovery.RegisterRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -326,6 +366,10 @@ func (s *FortifiService) Start() error {
 
 	if err != nil {
 		s.Logger.Fatal(err.Error())
+	}
+
+	if span != nil {
+		span.LogEvent("discovery.Register")
 	}
 
 	if !regResult.Recorded {
