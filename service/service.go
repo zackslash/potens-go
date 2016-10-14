@@ -151,9 +151,9 @@ func (s *FortifiService) relPath(file string) string {
 }
 
 //New get a new instance of a service
-func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (*FortifiService, error) {
+func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (FortifiService, error) {
 
-	s := &FortifiService{}
+	s := FortifiService{}
 	s.Logger = zap.New(zap.NewJSONEncoder())
 
 	if !s.parsedEnv && *parseEnv {
@@ -168,7 +168,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (*For
 		appIdent = &identity.AppIdentity{}
 		err := appIdent.FromJSONFile(s.relPath("app-identity.json"))
 		if err != nil {
-			return nil, err
+			return s, err
 		}
 	}
 
@@ -176,7 +176,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (*For
 		appDef = &definition.AppDefinition{}
 		err := appDef.FromConfig(s.relPath("app-definition.yaml"))
 		if err != nil {
-			return nil, err
+			return s, err
 		}
 	}
 
