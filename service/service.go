@@ -42,6 +42,7 @@ var (
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
+//FortifiService an instance of an application service
 type FortifiService struct {
 	appDefinition       *definition.AppDefinition
 	appIdentity         *identity.AppIdentity
@@ -126,14 +127,17 @@ func (s *FortifiService) parseEnv() {
 	s.parsedEnv = true
 }
 
+//SetPort sets the gRPC port
 func (s *FortifiService) SetPort(port int32) {
 	s.port = port
 }
 
+//GetPort gets the gRPC port
 func (s *FortifiService) GetPort() int32 {
 	return s.port
 }
 
+//SetDiscoveryClient set a shared discovery client
 func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
 	s.discoClient = discoClient
 }
@@ -147,9 +151,9 @@ func (s *FortifiService) relPath(file string) string {
 }
 
 //New get a new instance of a service
-func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (FortifiService, error) {
+func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (*FortifiService, error) {
 
-	s := FortifiService{}
+	s := &FortifiService{}
 	s.Logger = zap.New(zap.NewJSONEncoder())
 
 	if !s.parsedEnv && *parseEnv {
