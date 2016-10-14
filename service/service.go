@@ -39,8 +39,6 @@ import (
 )
 
 var (
-	//Logger used for standard logging
-	Logger   zap.Logger
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
@@ -56,6 +54,9 @@ type FortifiService struct {
 	hostname            string
 	instanceID          string
 	currentStatus       discovery.ServiceStatus
+
+	//Logger used for standard logging
+	Logger zap.Logger
 
 	parsedEnv        bool
 	imperiumService  string
@@ -140,7 +141,7 @@ func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClien
 func (s *FortifiService) relPath(file string) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		Logger.Fatal(err)
+		s.Logger.Fatal(err)
 	}
 	return path.Join(dir, file)
 }
@@ -149,11 +150,11 @@ func (s *FortifiService) relPath(file string) string {
 func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (FortifiService, error) {
 
 	s := FortifiService{}
-	Logger = zap.New(zap.NewJSONEncoder())
+	s.Logger = zap.New(zap.NewJSONEncoder())
 
 	if !s.parsedEnv && *parseEnv {
 		s.parseEnv()
-		Logger.Debug("Parsed Environment")
+		s.Logger.Debug("Parsed Environment")
 	}
 
 	s.instanceID = uuid.NewV4().String()
@@ -176,15 +177,15 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 	}
 
 	if len(appDef.Vendor) < 2 {
-		Logger.Fatal("The Vendor ID specified in your definition file is invalid")
+		s.Logger.Fatal("The Vendor ID specified in your definition file is invalid")
 	}
 
 	if len(appDef.AppID) < 2 {
-		Logger.Fatal("The App ID specified in your definition file is invalid")
+		s.Logger.Fatal("The App ID specified in your definition file is invalid")
 	}
 
 	if appIdent.AppID != appDef.GlobalAppID {
-		Logger.Fatal("The App ID in your definition file does not match your identity file")
+		s.Logger.Fatal("The App ID in your definition file does not match your identity file")
 	}
 
 	s.appDefinition = appDef
@@ -192,14 +193,14 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 
 	block, _ := pem.Decode([]byte(appIdent.PrivateKey))
 	if block == nil {
-		Logger.Fatal("No RSA private key found")
+		s.Logger.Fatal("No RSA private key found")
 	}
 
 	var key *rsa.PrivateKey
 	if block.Type == "RSA PRIVATE KEY" {
 		rsapk, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
-			Logger.Fatal("Unable to read RSA private key")
+			s.Logger.Fatal("Unable to read RSA private key")
 		}
 		key = rsapk
 	}
@@ -212,8 +213,8 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
 func (s *FortifiService) Start() error {
 
-	Logger.Info("Starting App: " + s.appDefinition.GlobalAppID + " - " + i18n.NewTranslatable(s.appDefinition.Name).Get("en"))
-	Logger.Info("Authing with: " + s.appIdentity.IdentityID + " - " + s.appIdentity.IdentityType)
+	s.Logger.Info("Starting App: " + s.appDefinition.GlobalAppID + " - " + i18n.NewTranslatable(s.appDefinition.Name).Get("en"))
+	s.Logger.Info("Authing with: " + s.appIdentity.IdentityID + " - " + s.appIdentity.IdentityType)
 
 	flag.Parse()
 	log.SetFlags(0)
@@ -233,7 +234,7 @@ func (s *FortifiService) Start() error {
 	if s.fidentClient == nil {
 		authconn, err := grpc.Dial(s.fidentService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 		if err != nil {
-			Logger.Fatal(err)
+			s.Logger.Fatal(err)
 		}
 		s.fidentClient = fident.NewAuthClient(authconn)
 	}
@@ -241,7 +242,7 @@ func (s *FortifiService) Start() error {
 	// perform auth
 	ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: s.appDefinition.GlobalAppID})
 	if err != nil {
-		Logger.Fatal(err)
+		s.Logger.Fatal(err)
 	}
 
 	// TODO: Verify challenge is from Fident using fident public key - !TO BE DISTRIBUTED! (?)
@@ -269,7 +270,7 @@ func (s *FortifiService) Start() error {
 
 	response, err := challengeResponseToken.SignedString(s.pk)
 	if err != nil {
-		Logger.Fatal("Unable to generate challenge response")
+		s.Logger.Fatal("Unable to generate challenge response")
 	}
 
 	authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: s.appDefinition.GlobalAppID, ChallengeResponse: response})
@@ -283,7 +284,7 @@ func (s *FortifiService) Start() error {
 		discoveryConn, err := grpc.Dial(s.discoveryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
-			Logger.Fatal(err)
+			s.Logger.Fatal(err)
 		}
 
 		s.discoClient = discovery.NewDiscoveryClient(discoveryConn)
@@ -293,7 +294,7 @@ func (s *FortifiService) Start() error {
 		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
-			Logger.Fatal(err)
+			s.Logger.Fatal(err)
 		}
 
 		s.undercroftClient = undercroft.NewUndercroftClient(regConn)
@@ -302,7 +303,7 @@ func (s *FortifiService) Start() error {
 	//TODO: Remove this once CLI tools are available
 	appDefYaml, err := yaml.Marshal(s.appDefinition)
 	if err != nil {
-		Logger.Fatal(err)
+		s.Logger.Fatal(err)
 	}
 
 	s.undercroftClient.RegisterApp(s.GetGrpcContext(), &undercroft.AppRegisterRequest{
@@ -320,13 +321,13 @@ func (s *FortifiService) Start() error {
 	})
 
 	if err != nil {
-		Logger.Fatal(err)
+		s.Logger.Fatal(err)
 	}
 
 	if !regResult.Recorded {
-		Logger.Fatal("Failed to register with the discovery service")
+		s.Logger.Fatal("Failed to register with the discovery service")
 	} else {
-		Logger.Info("Registered with Discovery Service")
+		s.Logger.Info("Registered with Discovery Service")
 	}
 	return nil
 }
@@ -405,7 +406,7 @@ func (s *FortifiService) getCerts() error {
 	s.imperiumCertificate = []byte(response.Certificate)
 	s.imperiumKey = []byte(response.PrivateKey)
 
-	Logger.Info("Received TLS Certificates", zap.String("hostname", s.hostname))
+	s.Logger.Info("Received TLS Certificates", zap.String("hostname", s.hostname))
 
 	return nil
 }
