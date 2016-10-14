@@ -220,7 +220,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *FortifiService) Start(collector *zipkin.Collector) error {
+func (s *FortifiService) Start(collector zipkin.Collector) error {
 
 	var err error
 	var span opentracing.Span
