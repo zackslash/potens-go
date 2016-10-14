@@ -31,6 +31,7 @@ import (
 	"github.com/fortifi/proto-go/imperium"
 	"github.com/fortifi/proto-go/undercroft"
 	"github.com/satori/go.uuid"
+	"github.com/uber-go/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -38,6 +39,8 @@ import (
 )
 
 var (
+	//Logger used for standard logging
+	Logger   zap.Logger
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
@@ -142,8 +145,11 @@ func (s *FortifiService) relPath(file string) string {
 	return path.Join(dir, file)
 }
 
-// Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) error {
+//New get a new instance of a service
+func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (FortifiService, error) {
+
+	s := FortifiService{}
+	Logger = zap.New(zap.NewJSONEncoder())
 
 	if !s.parsedEnv && *parseEnv {
 		s.parseEnv()
@@ -156,7 +162,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		appIdent = &identity.AppIdentity{}
 		err := appIdent.FromJSONFile(s.relPath("app-identity.json"))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -164,7 +170,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		appDef = &definition.AppDefinition{}
 		err := appDef.FromConfig(s.relPath("app-definition.yaml"))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -190,17 +196,23 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 
 	var key *rsa.PrivateKey
 	if block.Type == "RSA PRIVATE KEY" {
-		rsa, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		rsapk, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
 			log.Fatal("Unable to read RSA private key")
 		}
-		key = rsa
+		key = rsapk
 	}
 	s.pk = key
 	s.kh = s.appIdentity.KeyHandle
 
-	log.Print("Starting App: " + appDef.GlobalAppID + " - " + i18n.NewTranslatable(appDef.Name).Get("en"))
-	log.Print("Authing with: " + appIdent.IdentityID + " - " + appIdent.IdentityType)
+	return s, nil
+}
+
+// Start your service, retrieves tls Certificate to server, and registers with discovery service
+func (s *FortifiService) Start() error {
+
+	log.Print("Starting App: " + s.appDefinition.GlobalAppID + " - " + i18n.NewTranslatable(s.appDefinition.Name).Get("en"))
+	log.Print("Authing with: " + s.appIdentity.IdentityID + " - " + s.appIdentity.IdentityType)
 
 	flag.Parse()
 	log.SetFlags(0)
@@ -226,7 +238,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	}
 
 	// perform auth
-	ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: appDef.GlobalAppID})
+	ac, err := s.fidentClient.GetAuthenticationChallenge(s.GetGrpcContext(), &fident.AuthChallengePayload{Username: s.appDefinition.GlobalAppID})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -259,7 +271,7 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 		log.Fatal("Unable to generate challenge response")
 	}
 
-	authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: appDef.GlobalAppID, ChallengeResponse: response})
+	authres, err := s.fidentClient.PerformAuthentication(s.GetGrpcContext(), &fident.PerformAuthPayload{Username: s.appDefinition.GlobalAppID, ChallengeResponse: response})
 	if err != nil {
 		return err
 	}
@@ -287,20 +299,20 @@ func (s *FortifiService) Start(appDef *definition.AppDefinition, appIdent *ident
 	}
 
 	//TODO: Remove this once CLI tools are available
-	appDefYaml, err := yaml.Marshal(appDef)
+	appDefYaml, err := yaml.Marshal(s.appDefinition)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	s.undercroftClient.RegisterApp(s.GetGrpcContext(), &undercroft.AppRegisterRequest{
-		VendorId:       appDef.Vendor,
-		Id:             appDef.AppID,
+		VendorId:       s.appDefinition.Vendor,
+		Id:             s.appDefinition.AppID,
 		VendorSecret:   "",
 		DefinitionYaml: string(appDefYaml),
 	})
 
 	regResult, err := s.discoClient.Register(s.GetGrpcContext(), &discovery.RegisterRequest{
-		AppId:        appDef.GlobalAppID,
+		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
 		ServiceHost:  s.hostname,
 		ServicePort:  s.port,
