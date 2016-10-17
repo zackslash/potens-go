@@ -6,10 +6,9 @@ import (
 )
 
 //CreateResponse creates a new initialised response
-func CreateResponse(PageTitle string) *platform.HTTPResponse {
+func CreateResponse() *platform.HTTPResponse {
 	response := &platform.HTTPResponse{}
 	response.Headers = make(map[string]*platform.HTTPResponse_HTTPHeaderParameter)
-	response.Headers["x-fort-title"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{PageTitle}}
 	return response
 }
 
