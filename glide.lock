@@ -1,8 +1,24 @@
 hash: ec59c7f6e7a261260164910fcbf0603d5434cc86002d0488ca292c519298f5e8
-updated: 2016-10-13T15:58:26.427385294+01:00
+updated: 2016-10-27T08:24:20.031428238+01:00
 imports:
+- name: github.com/apache/thrift
+  version: 59cb6661bcee265d39ad524154472ebe27760f1e
+  subpackages:
+  - lib/go/thrift
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
 - name: github.com/dgrijalva/jwt-go
   version: d2709f9f1f31ebcda9651b03077758c1f3a0018c
+- name: github.com/eapache/go-resiliency
+  version: b86b1ec0dd4209a588dc1285cdd471e73525c0b3
+  subpackages:
+  - breaker
+- name: github.com/eapache/go-xerial-snappy
+  version: bb955e01b9346ac19dc29eb16586c90ded99a98c
+- name: github.com/eapache/queue
+  version: 44cc805cf13205b55f69e14bcb69867d1ae92f98
 - name: github.com/fident/proto-go
   version: 8436dc66d4847a6a3f90f73b1aaab2b02e5520e9
   subpackages:
@@ -12,39 +28,69 @@ imports:
   subpackages:
   - keys
 - name: github.com/fortifi/proto-go
-  version: 7d1f06ddf56a53f5c52726466d099f31583fabcc
+  version: c927287d1158e7306b2466b1da2cf72dd1b1f4d8
   subpackages:
   - discovery
   - imperium
+  - platform
   - undercroft
+- name: github.com/gogo/protobuf
+  version: a9cd0c35b97daf74d0ebf3514c5254814b2703b4
+  subpackages:
+  - proto
 - name: github.com/golang/protobuf
   version: 98fa357170587e470c5f27d3c3ea0947b71eb455
   subpackages:
   - proto
   - ptypes/timestamp
+- name: github.com/golang/snappy
+  version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
+- name: github.com/klauspost/crc32
+  version: cb6bfca970f6908083f26f39a79009d608efd5cd
+- name: github.com/opentracing/opentracing-go
+  version: 902ca977fd85455c364050f985eba376b44315f0
+  subpackages:
+  - ext
+  - log
+- name: github.com/openzipkin/zipkin-go-opentracing
+  version: c2f58fe28dad57ea0daa99fe5089fdcf6ead60ad
+  subpackages:
+  - _thrift/gen-go/scribe
+  - _thrift/gen-go/zipkincore
+  - flag
+  - types
+  - wire
+- name: github.com/rcrowley/go-metrics
+  version: ab2277b1c5d15c3cba104e9cbddbdfc622df5ad8
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: github.com/Shopify/sarama
+  version: fd498173ae2bfc49a2b4eb19353241317785e7e6
+- name: github.com/uber-go/atomic
+  version: 6c2817a9ef3b9315f7d237a652f2ab0dac2aee96
+- name: github.com/uber-go/zap
+  version: f2929c57adb5be8fb03cad9a6912c509a5cb60af
 - name: golang.org/x/net
-  version: 8b4af36cd21a1f85a7484b49feb7c79363106d8e
+  version: c46f265c325130a7a6c7b27db8c6fe14b64f1a68
   subpackages:
   - context
   - http2
-  - trace
   - http2/hpack
   - idna
-  - lex/httplex
   - internal/timeseries
+  - lex/httplex
+  - trace
 - name: google.golang.org/grpc
-  version: b1a2821ca5a4fd6b6e48ddfbb7d6d7584d839d21
+  version: b7f1379d3cbbbeb2ca3405852012e237aa05459e
   subpackages:
-  - credentials
-  - metadata
   - codes
+  - credentials
   - grpclog
   - internal
+  - metadata
   - naming
-  - transport
   - peer
+  - transport
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []
