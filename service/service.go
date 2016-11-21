@@ -395,6 +395,7 @@ func (s *FortifiService) heartBeat() {
 			s.discoClient.HeartBeat(s.GetGrpcContext(), &discovery.HeartBeatRequest{
 				AppId:        s.appDefinition.GlobalAppID,
 				InstanceUuid: s.instanceID,
+				Version:      s.appVersion,
 			})
 			time.Sleep(10 * time.Second)
 		}
@@ -406,6 +407,7 @@ func (s *FortifiService) Online() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
+		Version:      s.appVersion,
 		Status:       discovery.ServiceStatus_ONLINE,
 		Target:       discovery.StatusTarget_BOTH,
 	})
@@ -429,6 +431,7 @@ func (s *FortifiService) Offline() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
+		Version:      s.appVersion,
 		Status:       discovery.ServiceStatus_OFFLINE,
 		Target:       discovery.StatusTarget_INSTANCE,
 	})
