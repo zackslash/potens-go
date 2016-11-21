@@ -56,6 +56,7 @@ type FortifiService struct {
 	imperiumKey         []byte
 	hostname            string
 	instanceID          string
+	appVersion          discovery.AppVersion
 	currentStatus       discovery.ServiceStatus
 
 	//Logger used for standard logging
@@ -127,6 +128,13 @@ func (s *FortifiService) parseEnv() {
 		s.fidentService += ":" + defaultPort
 	} else {
 		s.fidentService += ":" + fidentPort
+	}
+
+	version := os.Getenv("SERVICE_VERSION")
+	if version == "" {
+		s.appVersion = discovery.AppVersion_STABLE
+	} else {
+		s.appVersion = version
 	}
 
 	s.parsedEnv = true
@@ -361,6 +369,7 @@ func (s *FortifiService) Start(collector zipkin.Collector) error {
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
 		ServiceHost:  s.hostname,
+		Version:      s.appVersion,
 		ServicePort:  s.port,
 	})
 

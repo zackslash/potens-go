@@ -1,12 +1,12 @@
 hash: ec59c7f6e7a261260164910fcbf0603d5434cc86002d0488ca292c519298f5e8
-updated: 2016-10-27T08:24:20.031428238+01:00
+updated: 2016-11-21T15:55:56.312485371Z
 imports:
 - name: github.com/apache/thrift
-  version: 59cb6661bcee265d39ad524154472ebe27760f1e
+  version: 84d6af4cf903571319e0ebddd7beb12bc93fb752
   subpackages:
   - lib/go/thrift
 - name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
   subpackages:
   - spew
 - name: github.com/dgrijalva/jwt-go
@@ -28,18 +28,19 @@ imports:
   subpackages:
   - keys
 - name: github.com/fortifi/proto-go
-  version: c927287d1158e7306b2466b1da2cf72dd1b1f4d8
+  version: 3c352234fad711c9e5ee7bde6b60d8865c22f808
   subpackages:
   - discovery
   - imperium
+  - metaroute
   - platform
   - undercroft
 - name: github.com/gogo/protobuf
-  version: a9cd0c35b97daf74d0ebf3514c5254814b2703b4
+  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
   subpackages:
   - proto
 - name: github.com/golang/protobuf
-  version: 98fa357170587e470c5f27d3c3ea0947b71eb455
+  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
   - proto
   - ptypes/timestamp
@@ -53,7 +54,7 @@ imports:
   - ext
   - log
 - name: github.com/openzipkin/zipkin-go-opentracing
-  version: c2f58fe28dad57ea0daa99fe5089fdcf6ead60ad
+  version: e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9
   subpackages:
   - _thrift/gen-go/scribe
   - _thrift/gen-go/zipkincore
@@ -67,11 +68,11 @@ imports:
 - name: github.com/Shopify/sarama
   version: fd498173ae2bfc49a2b4eb19353241317785e7e6
 - name: github.com/uber-go/atomic
-  version: 6c2817a9ef3b9315f7d237a652f2ab0dac2aee96
+  version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
 - name: github.com/uber-go/zap
-  version: f2929c57adb5be8fb03cad9a6912c509a5cb60af
+  version: 5c7c5002f484c5062d2e7ec0ba3ca08773c0692d
 - name: golang.org/x/net
-  version: c46f265c325130a7a6c7b27db8c6fe14b64f1a68
+  version: 4971afdc2f162e82d185353533d3cf16188a9f4e
   subpackages:
   - context
   - http2
@@ -81,7 +82,7 @@ imports:
   - lex/httplex
   - trace
 - name: google.golang.org/grpc
-  version: b7f1379d3cbbbeb2ca3405852012e237aa05459e
+  version: 777daa17ff9b5daef1cfdf915088a2ada3332bf0
   subpackages:
   - codes
   - credentials
