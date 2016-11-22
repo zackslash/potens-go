@@ -131,10 +131,12 @@ func (s *FortifiService) parseEnv() {
 	}
 
 	version := os.Getenv("SERVICE_VERSION")
-	if version == "" {
-		s.appVersion = discovery.AppVersion_STABLE
-	} else {
-		s.appVersion = version
+	s.appVersion = discovery.AppVersion_STABLE
+	if version != "" {
+		v, ok := discovery.AppVersion_value[version]
+		if ok {
+			s.appVersion = v
+		}
 	}
 
 	s.parsedEnv = true
