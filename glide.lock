@@ -1,5 +1,5 @@
-hash: ec59c7f6e7a261260164910fcbf0603d5434cc86002d0488ca292c519298f5e8
-updated: 2016-11-21T15:55:56.312485371Z
+hash: 4d8ff897a0837df778cd663281ce25ed70a5224873c37952b4b1f9d260f6e5cf
+updated: 2016-11-22T13:01:28.392407437Z
 imports:
 - name: github.com/apache/thrift
   version: 84d6af4cf903571319e0ebddd7beb12bc93fb752
@@ -20,7 +20,7 @@ imports:
 - name: github.com/eapache/queue
   version: 44cc805cf13205b55f69e14bcb69867d1ae92f98
 - name: github.com/fident/proto-go
-  version: 8436dc66d4847a6a3f90f73b1aaab2b02e5520e9
+  version: 17b955735f15db99543cfe5ad18358a5af8c59f5
   subpackages:
   - fident
 - name: github.com/fortifi/portcullis-go
@@ -28,7 +28,7 @@ imports:
   subpackages:
   - keys
 - name: github.com/fortifi/proto-go
-  version: 3c352234fad711c9e5ee7bde6b60d8865c22f808
+  version: 60484e1410dcd7e6056920e79a09155a967b8e5f
   subpackages:
   - discovery
   - imperium
@@ -40,7 +40,7 @@ imports:
   subpackages:
   - proto
 - name: github.com/golang/protobuf
-  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
+  version: df1d3ca07d2d07bba352d5b73c4313b4e2a6203e
   subpackages:
   - proto
   - ptypes/timestamp
@@ -70,9 +70,9 @@ imports:
 - name: github.com/uber-go/atomic
   version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
 - name: github.com/uber-go/zap
-  version: 5c7c5002f484c5062d2e7ec0ba3ca08773c0692d
+  version: dd147206a25aad11c300c661617a2fe26b4a81a7
 - name: golang.org/x/net
-  version: 4971afdc2f162e82d185353533d3cf16188a9f4e
+  version: cf4effbb9db1f3ef07f7e1891402991b6afbb276
   subpackages:
   - context
   - http2

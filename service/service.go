@@ -135,7 +135,7 @@ func (s *FortifiService) parseEnv() {
 	if version != "" {
 		v, ok := discovery.AppVersion_value[version]
 		if ok {
-			s.appVersion = v
+			s.appVersion = discovery.AppVersion(v)
 		}
 	}
 
