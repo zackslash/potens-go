@@ -450,6 +450,29 @@ func (s *FortifiService) Offline() error {
 	return nil
 }
 
+// Shutdown unregisters your service from discovery
+func (s *FortifiService) Shutdown(collector zipkin.Collector) error {
+	s.Logger.Info("Shutting Down App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
+
+	s.Offline()
+
+	deregResult, err := s.discoClient.DeRegister(s.GetGrpcContext(), &discovery.DeRegisterRequest{
+		AppId:        s.appDefinition.GlobalAppID,
+		InstanceUuid: s.instanceID,
+		Version:      s.appVersion,
+	})
+
+	if err != nil {
+		s.Logger.Fatal(err.Error())
+	}
+
+	if !deregResult.Recorded {
+		s.Logger.Fatal("Unable to deregister service")
+	}
+
+	return nil
+}
+
 func (s *FortifiService) getCerts() error {
 
 	imperiumConnection, err := grpc.Dial(s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
