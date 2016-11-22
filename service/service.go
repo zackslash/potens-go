@@ -83,7 +83,7 @@ func (s *FortifiService) parseEnv() {
 	defaultPort := "50051"
 	fortDomain := os.Getenv("FORT_DOMAIN")
 	if fortDomain != "" {
-		s.FortifiDomain = s.FortifiDomain
+		s.FortifiDomain = fortDomain
 	}
 
 	s.discoveryService = os.Getenv("FORT_DISCOVERY_LOCATION")
