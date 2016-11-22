@@ -451,7 +451,7 @@ func (s *FortifiService) Offline() error {
 }
 
 // Shutdown unregisters your service from discovery
-func (s *FortifiService) Shutdown(collector zipkin.Collector) error {
+func (s *FortifiService) Shutdown() error {
 	s.Logger.Info("Shutting Down App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
 
 	s.Offline()
