@@ -58,6 +58,7 @@ type FortifiService struct {
 	instanceID          string
 	appVersion          discovery.AppVersion
 	currentStatus       discovery.ServiceStatus
+	FortifiDomain       string
 
 	//Logger used for standard logging
 	Logger zap.Logger
@@ -75,16 +76,19 @@ type FortifiService struct {
 	kh               string
 }
 
+// DefaultFortifiDomain default domain to connect to fortifi services
+const DefaultFortifiDomain = "fortifi.services"
+
 func (s *FortifiService) parseEnv() {
 	defaultPort := "50051"
 	fortDomain := os.Getenv("FORT_DOMAIN")
-	if fortDomain == "" {
-		fortDomain = "fortifi.services"
+	if fortDomain != "" {
+		s.FortifiDomain = s.FortifiDomain
 	}
 
 	s.discoveryService = os.Getenv("FORT_DISCOVERY_LOCATION")
 	if s.discoveryService == "" {
-		s.discoveryService = "discovery-fortifi." + fortDomain
+		s.discoveryService = "discovery-fortifi." + s.FortifiDomain
 	}
 
 	discoPort := os.Getenv("FORT_DISCOVERY_PORT")
@@ -96,7 +100,7 @@ func (s *FortifiService) parseEnv() {
 
 	s.imperiumService = os.Getenv("FORT_IMPERIUM_LOCATION")
 	if s.imperiumService == "" {
-		s.imperiumService = "imperium-fortifi." + fortDomain
+		s.imperiumService = "imperium-fortifi." + s.FortifiDomain
 	}
 
 	imperiumPort := os.Getenv("FORT_IMPERIUM_PORT")
@@ -108,7 +112,7 @@ func (s *FortifiService) parseEnv() {
 
 	s.registryService = os.Getenv("FORT_REGISTRY_LOCATION")
 	if s.registryService == "" {
-		s.registryService = "registry-fortifi." + fortDomain
+		s.registryService = "registry-fortifi." + s.FortifiDomain
 	}
 
 	registryPort := os.Getenv("FORT_REGISTRY_PORT")
@@ -170,6 +174,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 
 	s := FortifiService{}
 	s.Logger = zap.New(zap.NewJSONEncoder())
+	s.FortifiDomain = DefaultFortifiDomain
 
 	if !s.parsedEnv && *parseEnv {
 		s.parseEnv()
