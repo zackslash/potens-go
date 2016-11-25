@@ -302,7 +302,7 @@ integrations:
         en: Billing Information
         fr: détails de facturation
   #Action buttons to show on the page
-  actions:
+  page_actions:
       #ID for this action
     - id: create-order
       #Path to integrate into
@@ -319,6 +319,29 @@ integrations:
         fr: Créer une nouvelle commande pour ce client
       #Launch style (page, dialog, window, integrated)
       mode: dialog
+      #Icon to display
+      icon: social:person-add
+
+  #Action buttons to show on the top of the left bar
+  header_actions:
+      #ID for this action
+    - id: create-order
+      #Path to integrate into
+      hook: vendor/appid/customers/:fid
+      #Path to link to on click
+      path: customer/{.fid}/orders/create
+      #Action text
+      title:
+        en: Create Order
+        fr: Créer une commande
+      #Action hover text
+      description:
+        en: Create a new order for this customer
+        fr: Créer une nouvelle commande pour ce client
+      #Launch style (page, dialog, window, integrated)
+      mode: dialog
+      #Icon to display
+      icon: social:person-add
 
 #######################
 #    Configuration    #

@@ -317,15 +317,17 @@ type AppIntegrationAction struct {
 	ID          string
 	Hook        string
 	Path        string
+	Icon        string
 	Mode        AppIntegrationActionMode
 	Title       i18n.Translations
 	Description i18n.Translations
 }
 
 type AppIntegrations struct {
-	Panels    []AppIntegrationPanel
-	MenuItems []AppIntegrationMenuItem `yaml:"menu_items"`
-	Actions   []AppIntegrationAction
+	Panels        []AppIntegrationPanel
+	MenuItems     []AppIntegrationMenuItem `yaml:"menu_items"`
+	HeaderActions []AppIntegrationAction   `yaml:"header_items"`
+	PageActions   []AppIntegrationAction   `yaml:"page_items"`
 }
 
 // FromConfig Populates your definition based on your app-definition.yaml
