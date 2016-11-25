@@ -15,6 +15,7 @@ type AppDefinition struct {
 	ConfigVersion             float32 `yaml:"config_version"`
 	Version                   float32
 	Vendor                    string
+	TrustedVendor             bool
 	AppID                     string `yaml:"app_id"`
 	GlobalAppID               string
 	Group                     string
