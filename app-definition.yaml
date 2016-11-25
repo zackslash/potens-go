@@ -301,7 +301,7 @@ integrations:
       description:
         en: Billing Information
         fr: détails de facturation
-  #Action buttons to show on the page
+  #Action buttons to show on the page (top) left bar
   page_actions:
       #ID for this action
     - id: create-order
@@ -322,7 +322,7 @@ integrations:
       #Icon to display
       icon: social:person-add
 
-  #Action buttons to show on the top of the left bar
+  #Action buttons to show in the page header
   header_actions:
       #ID for this action
     - id: create-order
