@@ -81,3 +81,25 @@ func TestAcronym(t *testing.T) {
 		t.Error("Single Word Acronym Failed")
 	}
 }
+
+func TestSplitGaID(t *testing.T) {
+	vendor, app, err := fortutil.SplitGaID("fortifi/app")
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if vendor != "fortifi" {
+		t.Error("Incorrect vendor ID")
+	}
+	if app != "app" {
+		t.Error("Incorrect app ID")
+	}
+
+	vendor, app, err = fortutil.SplitGaID("fortifi")
+	if err == nil{
+		t.Error("Failed to error on invalid GAID")
+	}
+	vendor, app, err = fortutil.SplitGaID("fortifi/klhfw/fwejhfew")
+	if err == nil{
+		t.Error("Failed to error on invalid GAID")
+	}
+}
