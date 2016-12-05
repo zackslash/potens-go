@@ -47,6 +47,8 @@ type AppType string
 const (
 	// AppTypeEmployee Employee
 	AppTypeEmployee AppType = "employee"
+	// AppTypeUser User
+	AppTypeUser AppType = "user"
 	// AppTypePublisher Publisher
 	AppTypePublisher AppType = "publisher"
 	// AppTypeCustomer Customer
