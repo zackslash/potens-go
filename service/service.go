@@ -10,24 +10,23 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os"
+	"path"
+	"path/filepath"
 	"strconv"
 	"time"
 
 	"golang.org/x/net/context"
 
-	"path"
-
-	"os"
-
-	"path/filepath"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fident/proto-go/fident"
 	"github.com/fortifi/portcullis-go/keys"
 	"github.com/fortifi/potens-go/definition"
+	"github.com/fortifi/potens-go/fdl"
 	"github.com/fortifi/potens-go/i18n"
 	"github.com/fortifi/potens-go/identity"
 	"github.com/fortifi/proto-go/discovery"
+	fd "github.com/fortifi/proto-go/fdl"
 	"github.com/fortifi/proto-go/imperium"
 	"github.com/fortifi/proto-go/undercroft"
 	"github.com/opentracing/opentracing-go"
@@ -59,6 +58,7 @@ type FortifiService struct {
 	appVersion          discovery.AppVersion
 	currentStatus       discovery.ServiceStatus
 	FortifiDomain       string
+	fdlClient           fd.FdlClient
 
 	//Logger used for standard logging
 	Logger zap.Logger
@@ -527,6 +527,21 @@ func (s *FortifiService) Identity() *identity.AppIdentity {
 // Definition retrieves your definition
 func (s *FortifiService) Definition() *definition.AppDefinition {
 	return s.appDefinition
+}
+
+// FDL retrives FDL instance
+func (s *FortifiService) FDL(fid string) *fdl.Entity {
+	if s.fdlClient == nil {
+		con, err := s.GetAppConnection(fdl.FDLGAID)
+		if err != nil {
+			s.Logger.Fatal("Unable to connect to FDL")
+		}
+		s.fdlClient = fd.NewFdlClient(con)
+		ctx := s.GetGrpcContext()
+		appID := s.Identity().AppID
+		fdl.SetContextAppID(ctx, appID)
+	}
+	return fdl.Mutate(fid, &s.fdlClient)
 }
 
 // GetAppConnection grpc.dial a service based on the discovery service
