@@ -39,12 +39,12 @@ var (
 // Entity is the structure for FDL mutation
 type Entity struct {
 	FID    string
-	Props  []Property
+	Props  []PropertyItem
 	Client fdl.FdlClient
 }
 
-// Property is FDL's property structure
-type Property struct {
+// PropertyItem is FDL's property structure
+type PropertyItem struct {
 	Property     string
 	Value        string
 	Type         PropertyType
@@ -54,6 +54,7 @@ type Property struct {
 // PropertyType enumeration
 type PropertyType int32
 
+// SetContextAppID sets both context and AppID
 func SetContextAppID(ctxn context.Context, appid string) {
 	ctx = ctxn
 	appID = appid
@@ -85,13 +86,41 @@ func (e *Entity) Commit() error {
 	return commit(e, appID)
 }
 
-func commit(e *Entity, memberID string) error {
+// Retrieve starts the process of data retrieval from FDL
+func (e *Entity) Retrieve() ([]*fdl.Property, error) {
+	return retrieve(e)
+}
+
+func retrieve(e *Entity) ([]*fdl.Property, error) {
 	props := map[string]*fdl.Property{}
-	req := fdl.MutationRequest{
+
+	for _, p := range e.Props {
+		props[p.Property] = &fdl.Property{
+			Property: p.Property,
+		}
+	}
+
+	req := fdl.ReadRequest{
 		Fid:        e.FID,
-		MemberId:   memberID,
+		MemberId:   "",
 		Properties: props,
 	}
+
+	res, err := e.Client.Read(ctx, &req)
+	if err != nil {
+		return []*fdl.Property{}, err
+	}
+
+	ret := []*fdl.Property{}
+	for _, r := range res.Properties {
+		ret = append(ret, r)
+	}
+
+	return ret, nil
+}
+
+func commit(e *Entity, memberID string) error {
+	props := map[string]*fdl.Property{}
 
 	for n, p := range e.Props {
 		props[fmt.Sprintf("%d", n)] = &fdl.Property{
@@ -102,19 +131,36 @@ func commit(e *Entity, memberID string) error {
 		}
 	}
 
+	req := fdl.MutationRequest{
+		Fid:        e.FID,
+		MemberId:   memberID,
+		Properties: props,
+	}
+
 	e.Client.Mutate(ctx, &req)
 	return nil
 }
 
-// Properties collects the properties to mutate
-func (e *Entity) Properties(props ...Property) *Entity {
+// Mutate collects the properties to mutate
+func (e *Entity) Mutate(props ...PropertyItem) *Entity {
 	e.Props = append(e.Props, props...)
 	return e
 }
 
+// Read collects the properties to read
+func (e *Entity) Read(props ...PropertyItem) *Entity {
+	e.Props = append(e.Props, props...)
+	return e
+}
+
+// Property creates a new property item
+func Property(property string) PropertyItem {
+	return PropertyItem{Property: property}
+}
+
 // Write will create / Replace Property / Replace a list
-func Write(property, value string, nType PropertyType) Property {
-	return Property{
+func Write(property, value string, nType PropertyType) PropertyItem {
+	return PropertyItem{
 		Property:     property,
 		Value:        value,
 		Type:         nType,
@@ -123,8 +169,8 @@ func Write(property, value string, nType PropertyType) Property {
 }
 
 // Append will append items to a list / Append string to existing value for data or meta / Increment count for counter
-func Append(property, value string, nType PropertyType) Property {
-	return Property{
+func Append(property, value string, nType PropertyType) PropertyItem {
+	return PropertyItem{
 		Property:     property,
 		Value:        value,
 		Type:         nType,
@@ -133,8 +179,8 @@ func Append(property, value string, nType PropertyType) Property {
 }
 
 // Remove will remove items from a list / Decrement count for counter
-func Remove(property, value string, nType PropertyType) Property {
-	return Property{
+func Remove(property, value string, nType PropertyType) PropertyItem {
+	return PropertyItem{
 		Property:     property,
 		Value:        value,
 		Type:         nType,
@@ -143,8 +189,8 @@ func Remove(property, value string, nType PropertyType) Property {
 }
 
 // Delete will delete a Property
-func Delete(property, value string, nType PropertyType) Property {
-	return Property{
+func Delete(property, value string, nType PropertyType) PropertyItem {
+	return PropertyItem{
 		Property:     property,
 		Value:        value,
 		Type:         nType,
@@ -154,5 +200,5 @@ func Delete(property, value string, nType PropertyType) Property {
 
 // Mutate starts FDL mutation on given FID
 func Mutate(fid string, c *fdl.FdlClient) *Entity {
-	return &Entity{FID: fid, Props: []Property{}, Client: *c}
+	return &Entity{FID: fid, Props: []PropertyItem{}, Client: *c}
 }
