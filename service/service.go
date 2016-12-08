@@ -534,7 +534,7 @@ func (s *FortifiService) FDL(fid string) *fdl.Entity {
 	if s.fdlClient == nil {
 		con, err := s.GetAppConnection(fdl.FDLGAID)
 		if err != nil {
-			s.Logger.Fatal("Unable to connect to FDL")
+			s.Logger.Fatal("Unable to connect to FDL", zap.String("error", err.Error()))
 		}
 		s.fdlClient = fd.NewFdlClient(con)
 		ctx := s.GetGrpcContext()
