@@ -5,6 +5,7 @@ import (
 
 	portcullis "github.com/fortifi/portcullis-go"
 	"github.com/fortifi/proto-go/fdl"
+	"github.com/gogo/protobuf/proto"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -36,6 +37,21 @@ var (
 	appID string
 )
 
+var propertyTypename = map[int32]string{
+	0: "meta",
+	1: "data",
+	2: "list",
+	3: "ulist",
+	4: "counter",
+}
+
+// Result is data returned from FDL query
+type Result struct {
+	Property string
+	Value    string
+	Type     PropertyType
+}
+
 // Entity is the structure for FDL mutation
 type Entity struct {
 	FID    string
@@ -53,6 +69,11 @@ type PropertyItem struct {
 
 // PropertyType enumeration
 type PropertyType int32
+
+// String function for PropertyType enumeration
+func (x PropertyType) String() string {
+	return proto.EnumName(propertyTypename, int32(x))
+}
 
 // SetContextAppID sets both context and AppID
 func SetContextAppID(ctxn context.Context, appid string) {
@@ -87,11 +108,11 @@ func (e *Entity) Commit() error {
 }
 
 // Retrieve starts the process of data retrieval from FDL
-func (e *Entity) Retrieve() ([]*fdl.Property, error) {
+func (e *Entity) Retrieve() ([]Result, error) {
 	return retrieve(e)
 }
 
-func retrieve(e *Entity) ([]*fdl.Property, error) {
+func retrieve(e *Entity) ([]Result, error) {
 	props := map[string]*fdl.Property{}
 
 	for _, p := range e.Props {
@@ -108,12 +129,17 @@ func retrieve(e *Entity) ([]*fdl.Property, error) {
 
 	res, err := e.Client.Read(ctx, &req)
 	if err != nil {
-		return []*fdl.Property{}, err
+		return []Result{}, err
 	}
 
-	ret := []*fdl.Property{}
+	ret := []Result{}
 	for _, r := range res.Properties {
-		ret = append(ret, r)
+		nr := Result{
+			Property: r.Property,
+			Value:    r.Value,
+			Type:     PropertyType(r.Type),
+		}
+		ret = append(ret, nr)
 	}
 
 	return ret, nil
