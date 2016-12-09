@@ -15,6 +15,7 @@ func (e *Entity) Write(property, value string) PropertyItem {
 		Value:        value,
 		Type:         DataType,
 		MutationMode: int32(fdl.MutationMode_WRITE),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -27,6 +28,7 @@ func (e *Entity) Append(property, value string) PropertyItem {
 		Value:        value,
 		Type:         DataType,
 		MutationMode: int32(fdl.MutationMode_APPEND),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -39,6 +41,7 @@ func (e *Entity) Delete(property, value string) PropertyItem {
 		Value:        value,
 		Type:         DataType,
 		MutationMode: int32(fdl.MutationMode_DELETE),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p

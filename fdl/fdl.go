@@ -2,10 +2,10 @@ package fdl
 
 import (
 	"fmt"
+	"sort"
 
 	portcullis "github.com/fortifi/portcullis-go"
 	"github.com/fortifi/proto-go/fdl"
-	"github.com/gogo/protobuf/proto"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -14,21 +14,6 @@ import (
 const (
 	// FDLGAID is the FDL Global App ID
 	FDLGAID = "fortifi/fdl"
-
-	// MetaType is the meta property type
-	MetaType PropertyType = 0
-
-	// DataType is the data property type
-	DataType PropertyType = 1
-
-	// ListType is the list property type
-	ListType PropertyType = 2
-
-	// UniqueListType is the unique list property type
-	UniqueListType PropertyType = 3
-
-	// CounterType is the counter property type
-	CounterType PropertyType = 4
 )
 
 var (
@@ -37,37 +22,13 @@ var (
 	appID string
 )
 
-var propertyTypename = map[int32]string{
-	0: "meta",
-	1: "data",
-	2: "list",
-	3: "ulist",
-	4: "counter",
-}
-
 // Entity is the structure for FDL mutation
 type Entity struct {
 	fid    string
-	props  []PropertyItem
-	rProps []PropertyItem
+	props  PropertyItems
+	rProps PropertyItems
 	result Result
 	client fdl.FdlClient
-}
-
-// PropertyItem is FDL's property structure
-type PropertyItem struct {
-	Property     string
-	Value        string
-	Type         PropertyType
-	MutationMode int32
-}
-
-// PropertyType enumeration
-type PropertyType int32
-
-// String function for PropertyType enumeration
-func (x PropertyType) String() string {
-	return proto.EnumName(propertyTypename, int32(x))
 }
 
 // SetContextAppID sets both context and AppID
@@ -144,6 +105,9 @@ func retrieve(e *Entity) (Result, error) {
 
 func commit(e *Entity, memberID string) error {
 	props := map[string]*fdl.Property{}
+
+	// Ensure mutations go out 'in order'
+	sort.Sort(e.props)
 	for n, p := range e.props {
 		props[fmt.Sprintf("%d", n)] = &fdl.Property{
 			Property: p.Property,
@@ -162,12 +126,6 @@ func commit(e *Entity, memberID string) error {
 	e.client.Mutate(ctx, &req)
 	e.props = []PropertyItem{}
 	return nil
-}
-
-// Mutate collects the properties to mutate
-func (e *Entity) Mutate(props ...PropertyItem) *Entity {
-	e.props = append(e.props, props...)
-	return e
 }
 
 // Read collects the properties to read

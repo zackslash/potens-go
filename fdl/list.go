@@ -13,6 +13,7 @@ func (e *Entity) AddListItem(property, value string) PropertyItem {
 		Value:        value,
 		Type:         ListType,
 		MutationMode: int32(fdl.MutationMode_APPEND),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -25,6 +26,7 @@ func (e *Entity) AddUniqueListItem(property, value string) PropertyItem {
 		Value:        value,
 		Type:         UniqueListType,
 		MutationMode: int32(fdl.MutationMode_APPEND),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -37,6 +39,7 @@ func (e *Entity) RemoveListItem(property, value string) PropertyItem {
 		Value:        value,
 		Type:         ListType,
 		MutationMode: int32(fdl.MutationMode_REMOVE),
+		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
