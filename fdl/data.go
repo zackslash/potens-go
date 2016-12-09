@@ -35,10 +35,10 @@ func (e *Entity) Append(property, value string) PropertyItem {
 }
 
 // Delete property data
-func (e *Entity) Delete(property, value string) PropertyItem {
+func (e *Entity) Delete(property string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
-		Value:        value,
+		Value:        "",
 		Type:         DataType,
 		MutationMode: int32(fdl.MutationMode_DELETE),
 		order:        len(e.props),
