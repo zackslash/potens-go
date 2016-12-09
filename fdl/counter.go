@@ -33,7 +33,7 @@ func (e *Entity) DecrementCounter(property string) PropertyItem {
 }
 
 // ResetCounter will reset properties counter
-func (e *Entity) ResetCounter(property, value string) PropertyItem {
+func (e *Entity) ResetCounter(property string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
 		Value:        "0",
@@ -45,7 +45,7 @@ func (e *Entity) ResetCounter(property, value string) PropertyItem {
 }
 
 // RemoveCounter will remove the properties counter
-func (e *Entity) RemoveCounter(property, value string) PropertyItem {
+func (e *Entity) RemoveCounter(property string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
 		Type:         CounterType,
