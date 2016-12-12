@@ -42,9 +42,9 @@ func (e *Entity) GetCounter(property string) int {
 	return val
 }
 
-// GetList returns property list data
-func (e *Entity) GetList(property string) []string {
-	dat := e.get(property, ListType)
+// GetSet returns property set data
+func (e *Entity) GetSet(property string) []string {
+	dat := e.get(property, SetType)
 	lst := []string{}
 	json.Unmarshal([]byte(dat), &lst)
 	return lst

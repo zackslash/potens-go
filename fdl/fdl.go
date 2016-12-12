@@ -2,7 +2,6 @@ package fdl
 
 import (
 	"fmt"
-	"sort"
 
 	portcullis "github.com/fortifi/portcullis-go"
 	"github.com/fortifi/proto-go/fdl"
@@ -65,12 +64,12 @@ func (e *Entity) Commit() error {
 
 // retrieve starts the process of data retrieval from FDL
 func retrieve(e *Entity) (Result, error) {
-	props := map[string]*fdl.Property{}
+	props := []*fdl.Property{}
 	for _, p := range e.rProps {
-		props[fmt.Sprintf("%s_%d", p.Property, p.Type)] = &fdl.Property{
+		props = append(props, &fdl.Property{
 			Property: p.Property,
 			Type:     fdl.PropertyType(p.Type),
-		}
+		})
 	}
 
 	req := fdl.ReadRequest{
@@ -104,17 +103,14 @@ func retrieve(e *Entity) (Result, error) {
 }
 
 func commit(e *Entity, memberID string) error {
-	props := map[string]*fdl.Property{}
-
-	// Ensure mutations go out 'in order'
-	sort.Sort(e.props)
-	for n, p := range e.props {
-		props[fmt.Sprintf("%d", n)] = &fdl.Property{
+	props := []*fdl.Property{}
+	for _, p := range e.props {
+		props = append(props, &fdl.Property{
 			Property: p.Property,
 			Type:     fdl.PropertyType(p.Type),
 			Value:    p.Value,
 			Mode:     fdl.MutationMode(p.MutationMode),
-		}
+		})
 	}
 
 	req := fdl.MutationRequest{

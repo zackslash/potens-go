@@ -9,11 +9,11 @@ func Property(property string) PropertyItem {
 	return p
 }
 
-// List retrieves property list data
-func List(property string) PropertyItem {
+// Set retrieves property set data
+func Set(property string) PropertyItem {
 	p := PropertyItem{
 		Property: property,
-		Type:     ListType,
+		Type:     SetType,
 	}
 	return p
 }

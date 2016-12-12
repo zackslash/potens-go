@@ -15,7 +15,6 @@ func (e *Entity) IncrementCounter(property string) PropertyItem {
 		Value:        "1",
 		Type:         CounterType,
 		MutationMode: int32(fdl.MutationMode_APPEND),
-		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -28,7 +27,6 @@ func (e *Entity) DecrementCounter(property string) PropertyItem {
 		Value:        "1",
 		Type:         CounterType,
 		MutationMode: int32(fdl.MutationMode_REMOVE),
-		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -41,7 +39,6 @@ func (e *Entity) ResetCounter(property string) PropertyItem {
 		Value:        "0",
 		Type:         CounterType,
 		MutationMode: int32(fdl.MutationMode_WRITE),
-		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -53,7 +50,6 @@ func (e *Entity) RemoveCounter(property string) PropertyItem {
 		Property:     property,
 		Type:         CounterType,
 		MutationMode: int32(fdl.MutationMode_DELETE),
-		order:        len(e.props),
 	}
 	e.props = append(e.props, p)
 	return p
