@@ -60,8 +60,8 @@ func CountersWithPrefix(property string) PropertyItem {
 	return p
 }
 
-// MetaWithprefix retrieves property meta data prefixed with given key
-func MetaWithprefix(property string) PropertyItem {
+// MetaWithPrefix retrieves property meta data prefixed with given key
+func MetaWithPrefix(property string) PropertyItem {
 	p := PropertyItem{
 		Property: property,
 		Type:     MetaType,
