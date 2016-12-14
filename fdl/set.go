@@ -6,23 +6,23 @@ import "github.com/fortifi/proto-go/fdl"
 * Set modifiers
 **/
 
-// AddListItem to property list data
-func (e *Entity) AddSetItem(property, key, value string) PropertyItem {
+// AddSetItem adds property set key
+func (e *Entity) AddSetItem(property, key string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
-		Value:        value,
+		Value:        key,
 		Type:         SetType,
-		MutationMode: int32(fdl.MutationMode_APPEND),
+		MutationMode: int32(fdl.MutationMode_WRITE),
 	}
 	e.props = append(e.props, p)
 	return p
 }
 
-// RemoveListItem will remove an item from property list data
-func (e *Entity) RemoveSetItem(property, value string) PropertyItem {
+// RemoveSetItem will remove an item from property list data
+func (e *Entity) RemoveSetItem(property, key string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
-		Value:        value,
+		Value:        key,
 		Type:         SetType,
 		MutationMode: int32(fdl.MutationMode_REMOVE),
 	}

@@ -22,6 +22,7 @@ type PropertyItem struct {
 	Value        string
 	Type         PropertyType
 	MutationMode int32
+	IsPrefix     bool
 }
 
 // PropertyItems is a sortable slice of property item

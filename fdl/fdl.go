@@ -64,11 +64,12 @@ func (e *Entity) Commit() error {
 
 // retrieve starts the process of data retrieval from FDL
 func retrieve(e *Entity) (Result, error) {
-	props := []*fdl.Property{}
+	props := []*fdl.ReadProperty{}
 	for _, p := range e.rProps {
-		props = append(props, &fdl.Property{
+		props = append(props, &fdl.ReadProperty{
 			Property: p.Property,
 			Type:     fdl.PropertyType(p.Type),
+			IsPrefix: p.IsPrefix,
 		})
 	}
 
