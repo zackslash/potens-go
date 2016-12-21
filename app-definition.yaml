@@ -283,8 +283,26 @@ integrations:
       hook: vendor/appid/customers/:fid
       #Path to request panel
       path: customer/{.fid}/panels/summary
+  #Page Header Navigation Items
+  header_menu_items:
+      #ID for this menu item
+    - id: billing-info
+      #Path to integrate into
+      hook: vendor/appid/customers/:fid
+      #Path to link to on click
+      path: customer/{.fid}/billing
+      #Launch style (full, integrated)
+      mode: integrated
+      #Text to display on menu
+      title:
+        en: Billing
+        fr: Facturation
+      #Hover text for menu item
+      description:
+        en: Billing Information
+        fr: détails de facturation
   #Page Navigation Items
-  menu_items:
+  page_menu_items:
       #ID for this menu item
     - id: billing-info
       #Path to integrate into

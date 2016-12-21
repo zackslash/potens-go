@@ -326,10 +326,11 @@ type AppIntegrationAction struct {
 }
 
 type AppIntegrations struct {
-	Panels        []AppIntegrationPanel
-	MenuItems     []AppIntegrationMenuItem `yaml:"menu_items"`
-	HeaderActions []AppIntegrationAction   `yaml:"header_actions"`
-	PageActions   []AppIntegrationAction   `yaml:"page_actions"`
+	Panels          []AppIntegrationPanel
+	HeaderMenuItems []AppIntegrationMenuItem `yaml:"header_menu_items"`
+	PageMenuItems   []AppIntegrationMenuItem `yaml:"page_menu_items"`
+	HeaderActions   []AppIntegrationAction   `yaml:"header_actions"`
+	PageActions     []AppIntegrationAction   `yaml:"page_actions"`
 }
 
 // FromConfig Populates your definition based on your app-definition.yaml
