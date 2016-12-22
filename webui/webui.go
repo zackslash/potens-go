@@ -26,3 +26,8 @@ func SetPageTitle(response *platform.HTTPResponse, PageTitle string) {
 func SetBackPath(response *platform.HTTPResponse, BackPath string) {
 	response.Headers["x-fort-back-path"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackPath}}
 }
+
+//SetPageIcon set the icon url/code on the response
+func SetPageIcon(response *platform.HTTPResponse, Icon string) {
+	response.Headers["x-fort-icon"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{Icon}}
+}
