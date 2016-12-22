@@ -22,7 +22,7 @@ func SetPageTitle(response *platform.HTTPResponse, PageTitle string) {
 	response.Headers["x-fort-title"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{PageTitle}}
 }
 
-//SetBackLink set the back link on the response
-func SetBackLink(response *platform.HTTPResponse, BackLink string) {
-	response.Headers["x-fort-back-link"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackLink}}
+//SetBackPath set the back path on the response, relative to app route
+func SetBackPath(response *platform.HTTPResponse, BackPath string) {
+	response.Headers["x-fort-back-path"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackPath}}
 }
