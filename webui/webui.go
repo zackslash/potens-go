@@ -21,3 +21,8 @@ func SetBreadcrumb(response *platform.HTTPResponse, breadcrumb breadcrumb.Breadc
 func SetPageTitle(response *platform.HTTPResponse, PageTitle string) {
 	response.Headers["x-fort-title"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{PageTitle}}
 }
+
+//SetBackLink set the back link on the response
+func SetBackLink(response *platform.HTTPResponse, BackLink string) {
+	response.Headers["x-fort-back-link"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackLink}}
+}
