@@ -286,10 +286,10 @@ type AppIntegrationPanel struct {
 type AppIntegrationMenuItemMode string
 
 const (
-	// AppIntegrationMenuItemModeFull Redirect to a new page
-	AppIntegrationMenuItemModeFull AppIntegrationMenuItemMode = "full"
+	// AppIntegrationMenuItemModePage Redirect to a new page
+	AppIntegrationMenuItemModePage AppIntegrationMenuItemMode = "page"
 	// AppIntegrationMenuItemModeIntegrated Open within the content area of the entity page
-	AppIntegrationMenuItemModeIntegrated AppIntegrationMenuItemMode = "integrated"
+	AppIntegrationMenuItemModePagelet AppIntegrationMenuItemMode = "pagelet"
 )
 
 type AppIntegrationMenuItem struct {
@@ -307,12 +307,12 @@ type AppIntegrationActionMode string
 const (
 	// AppIntegrationActionModePage Redirect to a new page
 	AppIntegrationActionModePage AppIntegrationActionMode = "page"
+	// AppIntegrationActionModePagelet Open within the content area of the entity page
+	AppIntegrationActionModePagelet AppIntegrationActionMode = "pagelet"
 	// AppIntegrationActionModeDialog Open in a dialog
 	AppIntegrationActionModeDialog AppIntegrationActionMode = "dialog"
 	// AppIntegrationActionModeWindow Open in a new window
 	AppIntegrationActionModeWindow AppIntegrationActionMode = "window"
-	// AppIntegrationActionModeIntegrated Open within the content area of the entity page
-	AppIntegrationActionModeIntegrated AppIntegrationActionMode = "integrated"
 )
 
 type AppIntegrationAction struct {
