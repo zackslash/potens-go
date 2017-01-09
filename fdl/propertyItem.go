@@ -14,15 +14,23 @@ const (
 
 	// SetType is the type for FDL set
 	SetType PropertyType = 3
+
+	// ListType is the type for FDL list
+	ListType PropertyType = 4
 )
 
 // PropertyItem is FDL's property structure
 type PropertyItem struct {
 	Property     string
+	Key          string
 	Value        string
 	Type         PropertyType
 	MutationMode int32
 	IsPrefix     bool
+	StartKey     string
+	EndKey       string
+	Limit        int32
+	Inclusive    bool
 }
 
 // PropertyItems is a sortable slice of property item
@@ -36,6 +44,7 @@ var propertyTypename = map[int32]string{
 	1: "data",
 	2: "counter",
 	3: "set",
+	4: "list",
 }
 
 // String function for PropertyType enumeration

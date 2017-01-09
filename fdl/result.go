@@ -11,6 +11,12 @@ type Result struct {
 	Items map[string][]ResultItem
 }
 
+// KeyValuePair item
+type KeyValuePair struct {
+	Key   string
+	Value string
+}
+
 // ResultItem is a single query result
 type ResultItem struct {
 	Property string
@@ -53,6 +59,14 @@ func (e *Entity) GetSet(property string) []string {
 // GetMeta returns property meta data
 func (e *Entity) GetMeta(property string) string {
 	return e.get(property, MetaType)
+}
+
+// GetList returns property list data
+func (e *Entity) GetList(listName string) []KeyValuePair {
+	dat := e.get(listName, ListType)
+	lst := []KeyValuePair{}
+	json.Unmarshal([]byte(dat), &lst)
+	return lst
 }
 
 // Get returns property data for type

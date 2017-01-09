@@ -5,7 +5,7 @@ import (
 )
 
 /*
-* Data modifiers
+* Meta modifiers
 **/
 
 // WriteMeta will write to property meta data

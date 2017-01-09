@@ -6,6 +6,8 @@ import (
 	portcullis "github.com/fortifi/portcullis-go"
 	"github.com/fortifi/proto-go/fdl"
 
+	"encoding/json"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -65,12 +67,18 @@ func (e *Entity) Commit() error {
 // retrieve starts the process of data retrieval from FDL
 func retrieve(e *Entity) (Result, error) {
 	props := []*fdl.ReadProperty{}
+	lst := []PropertyItem{}
+
 	for _, p := range e.rProps {
-		props = append(props, &fdl.ReadProperty{
-			Property: p.Property,
-			Type:     fdl.PropertyType(p.Type),
-			IsPrefix: p.IsPrefix,
-		})
+		if p.Type != ListType {
+			props = append(props, &fdl.ReadProperty{
+				Property: p.Property,
+				Type:     fdl.PropertyType(p.Type),
+				IsPrefix: p.IsPrefix,
+			})
+		} else {
+			lst = append(lst, p)
+		}
 	}
 
 	req := fdl.ReadRequest{
@@ -79,25 +87,90 @@ func retrieve(e *Entity) (Result, error) {
 		Properties: props,
 	}
 
-	res, err := e.client.Read(ctx, &req)
-	if err != nil {
-		return Result{}, err
+	ret := map[string][]ResultItem{}
+
+	if len(props) > 0 {
+		res, err := e.client.Read(ctx, &req)
+		if err != nil {
+			return Result{}, err
+		}
+
+		for _, r := range res.Properties {
+			nr := ResultItem{
+				Property: r.Property,
+				Value:    r.Value,
+				Type:     PropertyType(r.Type),
+			}
+
+			cur := ret[r.Property]
+			if cur == nil {
+				cur = []ResultItem{}
+			}
+			cur = append(cur, nr)
+			ret[fmt.Sprintf("%s_%d", r.Property, r.Type)] = cur
+		}
 	}
 
-	ret := map[string][]ResultItem{}
-	for _, r := range res.Properties {
-		nr := ResultItem{
-			Property: r.Property,
-			Value:    r.Value,
-			Type:     PropertyType(r.Type),
-		}
+	if len(lst) > 0 {
+		for _, lp := range lst {
+			f := []KeyValuePair{}
+			if lp.StartKey == "" && lp.EndKey == "" {
+				// list retrieve item
+				req := fdl.KeyRequest{
+					Fid:      e.fid,
+					ListName: lp.Property,
+					Key:      lp.Key,
+					MemberId: "",
+				}
 
-		cur := ret[r.Property]
-		if cur == nil {
-			cur = []ResultItem{}
+				r, err := e.client.ListRetrieveItem(ctx, &req)
+				if err != nil {
+					return Result{}, err
+				}
+
+				f = append(f, KeyValuePair{
+					Key:   r.Key,
+					Value: r.Value,
+				})
+			} else {
+				// list retrieve range
+				req := fdl.ListRangeRequest{
+					Fid:            e.fid,
+					ListName:       lp.Property,
+					StartKey:       lp.StartKey,
+					EndKey:         lp.EndKey,
+					Limit:          lp.Limit,
+					InclusiveStart: lp.Inclusive,
+					InclusiveEnd:   lp.Inclusive,
+					MemberId:       "",
+				}
+
+				r, err := e.client.ListRange(ctx, &req)
+				if err != nil {
+					return Result{}, err
+				}
+
+				for _, l := range r.Items {
+					f = append(f, KeyValuePair{
+						Key:   l.Key,
+						Value: l.Value,
+					})
+				}
+			}
+
+			m, err := json.Marshal(f)
+			if err != nil {
+				return Result{}, err
+			}
+
+			ri := ResultItem{
+				Property: lp.Property,
+				Value:    string(m),
+				Type:     ListType,
+			}
+
+			ret[fmt.Sprintf("%s_%d", lp.Property, ListType)] = []ResultItem{ri}
 		}
-		cur = append(cur, nr)
-		ret[fmt.Sprintf("%s_%d", r.Property, r.Type)] = cur
 	}
 
 	return Result{Items: ret}, nil
@@ -105,22 +178,63 @@ func retrieve(e *Entity) (Result, error) {
 
 func commit(e *Entity, memberID string) error {
 	props := []*fdl.Property{}
+	lst := []PropertyItem{}
 	for _, p := range e.props {
-		props = append(props, &fdl.Property{
-			Property: p.Property,
-			Type:     fdl.PropertyType(p.Type),
-			Value:    p.Value,
-			Mode:     fdl.MutationMode(p.MutationMode),
-		})
+		if p.Type != ListType {
+			props = append(props, &fdl.Property{
+				Property: p.Property,
+				Type:     fdl.PropertyType(p.Type),
+				Value:    p.Value,
+				Mode:     fdl.MutationMode(p.MutationMode),
+			})
+		} else {
+			lst = append(lst, p)
+		}
 	}
 
-	req := fdl.MutationRequest{
-		Fid:        e.fid,
-		MemberId:   memberID,
-		Properties: props,
+	if len(props) > 0 {
+		req := fdl.MutationRequest{
+			Fid:        e.fid,
+			MemberId:   memberID,
+			Properties: props,
+		}
+		_, err := e.client.Mutate(ctx, &req)
+		if err != nil {
+			return err
+		}
 	}
 
-	e.client.Mutate(ctx, &req)
+	if len(lst) > 0 {
+		for _, lp := range lst {
+			if lp.MutationMode == int32(fdl.MutationMode_WRITE) {
+				// list write action
+				r := fdl.ListAddRequest{
+					Fid:      e.fid,
+					ListName: lp.Property,
+					Key:      lp.Key,
+					Value:    lp.Value,
+					MemberId: memberID,
+				}
+				_, err := e.client.ListAdd(ctx, &r)
+				if err != nil {
+					return err
+				}
+			} else if lp.MutationMode == int32(fdl.MutationMode_REMOVE) {
+				// list remove action
+				r := fdl.KeyRequest{
+					Fid:      e.fid,
+					ListName: lp.Property,
+					Key:      lp.Key,
+					MemberId: memberID,
+				}
+				_, err := e.client.ListRemove(ctx, &r)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
 	e.props = []PropertyItem{}
 	return nil
 }

@@ -69,3 +69,28 @@ func MetaWithPrefix(property string) PropertyItem {
 	}
 	return p
 }
+
+// ListItem retrieves a single list item
+func ListItem(listName, key string) PropertyItem {
+	p := PropertyItem{
+		Property: listName,
+		Type:     ListType,
+		Key:      key,
+		IsPrefix: false,
+	}
+	return p
+}
+
+// ListRange retrieves list item collecion by range
+func ListRange(listName, startKey, endKey string, limit int32, inclusive bool) PropertyItem {
+	p := PropertyItem{
+		Property:  listName,
+		Type:      ListType,
+		IsPrefix:  false,
+		StartKey:  startKey,
+		EndKey:    endKey,
+		Limit:     limit,
+		Inclusive: inclusive,
+	}
+	return p
+}
