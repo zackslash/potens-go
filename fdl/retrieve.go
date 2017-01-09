@@ -82,15 +82,14 @@ func ListItem(listName, key string) PropertyItem {
 }
 
 // ListRange retrieves list item collecion by range
-func ListRange(listName, startKey, endKey string, limit int32, inclusive bool) PropertyItem {
+func ListRange(listName, startKey, endKey string, limit int32) PropertyItem {
 	p := PropertyItem{
-		Property:  listName,
-		Type:      ListType,
-		IsPrefix:  false,
-		StartKey:  startKey,
-		EndKey:    endKey,
-		Limit:     limit,
-		Inclusive: inclusive,
+		Property: listName,
+		Type:     ListType,
+		IsPrefix: false,
+		StartKey: startKey,
+		EndKey:   endKey,
+		Limit:    limit,
 	}
 	return p
 }

@@ -30,7 +30,6 @@ type PropertyItem struct {
 	StartKey     string
 	EndKey       string
 	Limit        int32
-	Inclusive    bool
 }
 
 // PropertyItems is a sortable slice of property item

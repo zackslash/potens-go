@@ -135,14 +135,12 @@ func retrieve(e *Entity) (Result, error) {
 			} else {
 				// list retrieve range
 				req := fdl.ListRangeRequest{
-					Fid:            e.fid,
-					ListName:       lp.Property,
-					StartKey:       lp.StartKey,
-					EndKey:         lp.EndKey,
-					Limit:          lp.Limit,
-					InclusiveStart: lp.Inclusive,
-					InclusiveEnd:   lp.Inclusive,
-					MemberId:       "",
+					Fid:      e.fid,
+					ListName: lp.Property,
+					StartKey: lp.StartKey,
+					EndKey:   lp.EndKey,
+					Limit:    lp.Limit,
+					MemberId: "",
 				}
 
 				r, err := e.client.ListRange(ctx, &req)
