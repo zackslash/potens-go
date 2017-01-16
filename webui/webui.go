@@ -31,3 +31,19 @@ func SetBackPath(response *platform.HTTPResponse, BackPath string) {
 func SetPageIcon(response *platform.HTTPResponse, Icon string) {
 	response.Headers["x-fort-icon"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{Icon}}
 }
+
+// PageIntergrationType
+type PageIntergrationType string
+
+//Page Intergration Types
+const (
+	// PageIntergrationTypeDefault Default
+	PageIntergrationTypeDefault PageIntergrationType = "default"
+	// PageIntergrationTypeNone None
+	PageIntergrationTypeNone PageIntergrationType = "none"
+)
+
+//SetPageIcon set the icon url/code on the response
+func SetPageIntegrations(response *platform.HTTPResponse, IntegrationType PageIntergrationType) {
+	response.Headers["x-fort-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{IntegrationType}}
+}
