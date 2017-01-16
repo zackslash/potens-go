@@ -1,6 +1,8 @@
 package webui
 
 import (
+	"net/url"
+
 	"github.com/fortifi/potens-go/webui/breadcrumb"
 	"github.com/fortifi/proto-go/platform"
 )
@@ -46,4 +48,16 @@ const (
 //SetPageIcon set the icon url/code on the response
 func SetPageIntegrations(response *platform.HTTPResponse, IntegrationType PageIntergrationType) {
 	response.Headers["x-fort-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{IntegrationType}}
+}
+
+func GetUrl(request *platform.HTTPRequest) url.URL {
+	return &url.URL{
+		Scheme:     "https",
+		Host:       "apps.fortifi.io",
+		Path:       request.Path,
+		RawPath:    request.Path,
+		ForceQuery: false,
+		RawQuery:   request.QueryString,
+	}
+
 }
