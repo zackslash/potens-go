@@ -47,10 +47,10 @@ const (
 
 //SetPageIcon set the icon url/code on the response
 func SetPageIntegrations(response *platform.HTTPResponse, IntegrationType PageIntergrationType) {
-	response.Headers["x-fort-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{IntegrationType}}
+	response.Headers["x-fort-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{string(IntegrationType)}}
 }
 
-func GetUrl(request *platform.HTTPRequest) url.URL {
+func GetUrl(request *platform.HTTPRequest) *url.URL {
 	return &url.URL{
 		Scheme:     "https",
 		Host:       "apps.fortifi.io",
@@ -59,5 +59,4 @@ func GetUrl(request *platform.HTTPRequest) url.URL {
 		ForceQuery: false,
 		RawQuery:   request.QueryString,
 	}
-
 }
