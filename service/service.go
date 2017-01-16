@@ -433,6 +433,15 @@ func (s *FortifiService) Online() error {
 	return nil
 }
 
+// Close take your service offline, and if running locally, also shutdown
+func (s *FortifiService) Close() error {
+	err := s.Offline()
+	if err == nil && s.FortifiDomain != DefaultFortifiDomain {
+		return s.Shutdown()
+	}
+	return err
+}
+
 // Offline take your service offline
 func (s *FortifiService) Offline() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
@@ -458,8 +467,6 @@ func (s *FortifiService) Offline() error {
 // Shutdown unregisters your service from discovery
 func (s *FortifiService) Shutdown() error {
 	s.Logger.Info("Shutting Down App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
-
-	s.Offline()
 
 	deregResult, err := s.discoClient.DeRegister(s.GetGrpcContext(), &discovery.DeRegisterRequest{
 		AppId:        s.appDefinition.GlobalAppID,
