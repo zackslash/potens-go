@@ -3,13 +3,13 @@ package definition_test
 import (
 	"testing"
 
-	"github.com/fortifi/potens-go/definition"
-	"github.com/fortifi/potens-go/i18n"
+	"github.com/cubex/potens-go/definition"
+	"github.com/cubex/potens-go/i18n"
 )
 
 func TestReadYaml(t *testing.T) {
 	def := definition.AppDefinition{}
-	err := def.FromConfig("../app-definition.yaml")
+	err := def.FromConfig("../app-definition.dist.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}

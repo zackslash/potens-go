@@ -18,17 +18,17 @@ import (
 
 	"golang.org/x/net/context"
 
+	"github.com/cubex/portcullis-go/keys"
+	"github.com/cubex/potens-go/definition"
+	"github.com/cubex/potens-go/adl"
+	"github.com/cubex/potens-go/i18n"
+	"github.com/cubex/potens-go/identity"
+	ad "github.com/cubex/proto-go/adl"
+	"github.com/cubex/proto-go/discovery"
+	"github.com/cubex/proto-go/imperium"
+	"github.com/cubex/proto-go/undercroft"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fident/proto-go/fident"
-	"github.com/fortifi/portcullis-go/keys"
-	"github.com/fortifi/potens-go/definition"
-	"github.com/fortifi/potens-go/fdl"
-	"github.com/fortifi/potens-go/i18n"
-	"github.com/fortifi/potens-go/identity"
-	"github.com/fortifi/proto-go/discovery"
-	fd "github.com/fortifi/proto-go/fdl"
-	"github.com/fortifi/proto-go/imperium"
-	"github.com/fortifi/proto-go/undercroft"
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/satori/go.uuid"
@@ -43,8 +43,8 @@ var (
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
-//FortifiService an instance of an application service
-type FortifiService struct {
+//CubexService an instance of an application service
+type CubexService struct {
 	appDefinition       *definition.AppDefinition
 	appIdentity         *identity.AppIdentity
 	port                int32
@@ -57,8 +57,8 @@ type FortifiService struct {
 	instanceID          string
 	appVersion          discovery.AppVersion
 	currentStatus       discovery.ServiceStatus
-	FortifiDomain       string
-	fdlClient           fd.FdlClient
+	CubexDomain         string
+	adlClient           ad.AdlClient
 
 	//Logger used for standard logging
 	Logger zap.Logger
@@ -76,46 +76,46 @@ type FortifiService struct {
 	kh               string
 }
 
-// DefaultFortifiDomain default domain to connect to fortifi services
-const DefaultFortifiDomain = "fortifi.services"
+// DefaultCubexDomain default domain to connect to cubex services
+const DefaultCubexDomain = "services.cubex.io"
 
-func (s *FortifiService) parseEnv() {
+func (s *CubexService) parseEnv() {
 	defaultPort := "50051"
-	fortDomain := os.Getenv("FORT_DOMAIN")
-	if fortDomain != "" {
-		s.FortifiDomain = fortDomain
+	cubexDomain := os.Getenv("CUBEX_DOMAIN")
+	if cubexDomain != "" {
+		s.CubexDomain = cubexDomain
 	}
 
-	s.discoveryService = os.Getenv("FORT_DISCOVERY_LOCATION")
+	s.discoveryService = os.Getenv("CUBEX_DISCOVERY_LOCATION")
 	if s.discoveryService == "" {
-		s.discoveryService = "discovery-fortifi." + s.FortifiDomain
+		s.discoveryService = "discovery-cubex." + s.CubexDomain
 	}
 
-	discoPort := os.Getenv("FORT_DISCOVERY_PORT")
+	discoPort := os.Getenv("CUBEX_DISCOVERY_PORT")
 	if discoPort == "" {
 		s.discoveryService += ":" + defaultPort
 	} else {
 		s.discoveryService += ":" + discoPort
 	}
 
-	s.imperiumService = os.Getenv("FORT_IMPERIUM_LOCATION")
+	s.imperiumService = os.Getenv("CUBEX_IMPERIUM_LOCATION")
 	if s.imperiumService == "" {
-		s.imperiumService = "imperium-fortifi." + s.FortifiDomain
+		s.imperiumService = "imperium-cubex." + s.CubexDomain
 	}
 
-	imperiumPort := os.Getenv("FORT_IMPERIUM_PORT")
+	imperiumPort := os.Getenv("CUBEX_IMPERIUM_PORT")
 	if imperiumPort == "" {
 		s.imperiumService += ":" + defaultPort
 	} else {
 		s.imperiumService += ":" + imperiumPort
 	}
 
-	s.registryService = os.Getenv("FORT_REGISTRY_LOCATION")
+	s.registryService = os.Getenv("CUBEX_REGISTRY_LOCATION")
 	if s.registryService == "" {
-		s.registryService = "registry-fortifi." + s.FortifiDomain
+		s.registryService = "registry-cubex." + s.CubexDomain
 	}
 
-	registryPort := os.Getenv("FORT_REGISTRY_PORT")
+	registryPort := os.Getenv("CUBEX_REGISTRY_PORT")
 	if registryPort == "" {
 		s.registryService += ":" + defaultPort
 	} else {
@@ -147,21 +147,21 @@ func (s *FortifiService) parseEnv() {
 }
 
 //SetPort sets the gRPC port
-func (s *FortifiService) SetPort(port int32) {
+func (s *CubexService) SetPort(port int32) {
 	s.port = port
 }
 
 //GetPort gets the gRPC port
-func (s *FortifiService) GetPort() int32 {
+func (s *CubexService) GetPort() int32 {
 	return s.port
 }
 
 //SetDiscoveryClient set a shared discovery client
-func (s *FortifiService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
+func (s *CubexService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
 	s.discoClient = discoClient
 }
 
-func (s *FortifiService) relPath(file string) string {
+func (s *CubexService) relPath(file string) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		s.Logger.Fatal(err.Error())
@@ -170,11 +170,11 @@ func (s *FortifiService) relPath(file string) string {
 }
 
 //New get a new instance of a service
-func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (FortifiService, error) {
+func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (CubexService, error) {
 
-	s := FortifiService{}
+	s := CubexService{}
 	s.Logger = zap.New(zap.NewJSONEncoder())
-	s.FortifiDomain = DefaultFortifiDomain
+	s.CubexDomain = DefaultCubexDomain
 
 	if !s.parsedEnv && *parseEnv {
 		s.parseEnv()
@@ -186,7 +186,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 
 	if appIdent == nil {
 		appIdent = &identity.AppIdentity{}
-		err := appIdent.FromJSONFile(s.relPath("app-identity.json"))
+		err := appIdent.FromJSONFile(s.relPath("app-identity.dist.json"))
 		if err != nil {
 			return s, err
 		}
@@ -194,7 +194,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 
 	if appDef == nil {
 		appDef = &definition.AppDefinition{}
-		err := appDef.FromConfig(s.relPath("app-definition.yaml"))
+		err := appDef.FromConfig(s.relPath("app-definition.dist.yaml"))
 		if err != nil {
 			return s, err
 		}
@@ -235,7 +235,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Fort
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *FortifiService) Start(collector zipkin.Collector) error {
+func (s *CubexService) Start(collector zipkin.Collector) error {
 
 	var err error
 	var span opentracing.Span
@@ -396,7 +396,7 @@ func (s *FortifiService) Start(collector zipkin.Collector) error {
 	return nil
 }
 
-func (s *FortifiService) heartBeat() {
+func (s *CubexService) heartBeat() {
 	if s.currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
 			s.discoClient.HeartBeat(s.GetGrpcContext(), &discovery.HeartBeatRequest{
@@ -410,7 +410,7 @@ func (s *FortifiService) heartBeat() {
 }
 
 // Online take your service online
-func (s *FortifiService) Online() error {
+func (s *CubexService) Online() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -434,16 +434,16 @@ func (s *FortifiService) Online() error {
 }
 
 // Close take your service offline, and if running locally, also shutdown
-func (s *FortifiService) Close() error {
+func (s *CubexService) Close() error {
 	err := s.Offline()
-	if err == nil && s.FortifiDomain != DefaultFortifiDomain {
+	if err == nil && s.CubexDomain != DefaultCubexDomain {
 		return s.Shutdown()
 	}
 	return err
 }
 
 // Offline take your service offline
-func (s *FortifiService) Offline() error {
+func (s *CubexService) Offline() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -465,7 +465,7 @@ func (s *FortifiService) Offline() error {
 }
 
 // Shutdown unregisters your service from discovery
-func (s *FortifiService) Shutdown() error {
+func (s *CubexService) Shutdown() error {
 	s.Logger.Info("Shutting Down App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
 
 	deregResult, err := s.discoClient.DeRegister(s.GetGrpcContext(), &discovery.DeRegisterRequest{
@@ -485,7 +485,7 @@ func (s *FortifiService) Shutdown() error {
 	return nil
 }
 
-func (s *FortifiService) getCerts() error {
+func (s *CubexService) getCerts() error {
 
 	imperiumConnection, err := grpc.Dial(s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 	if err != nil {
@@ -509,7 +509,7 @@ func (s *FortifiService) getCerts() error {
 }
 
 // CreateServer creates a gRPC server with your tls certificates
-func (s *FortifiService) CreateServer() (net.Listener, *grpc.Server, error) {
+func (s *CubexService) CreateServer() (net.Listener, *grpc.Server, error) {
 
 	lis, err := net.Listen("tcp", s.hostname+":"+strconv.FormatInt(int64(s.port), 10))
 	if err != nil {
@@ -527,32 +527,32 @@ func (s *FortifiService) CreateServer() (net.Listener, *grpc.Server, error) {
 }
 
 // Identity retrieves your identity
-func (s *FortifiService) Identity() *identity.AppIdentity {
+func (s *CubexService) Identity() *identity.AppIdentity {
 	return s.appIdentity
 }
 
 // Definition retrieves your definition
-func (s *FortifiService) Definition() *definition.AppDefinition {
+func (s *CubexService) Definition() *definition.AppDefinition {
 	return s.appDefinition
 }
 
 // FDL retrives FDL instance
-func (s *FortifiService) FDL(fid string) *fdl.Entity {
-	if s.fdlClient == nil {
-		con, err := s.GetAppConnection(fdl.FDLGAID)
+func (s *CubexService) FDL(fid string) *adl.Entity {
+	if s.adlClient == nil {
+		con, err := s.GetAppConnection(adl.FDLGAID)
 		if err != nil {
 			s.Logger.Fatal("Unable to connect to FDL", zap.String("error", err.Error()))
 		}
-		s.fdlClient = fd.NewFdlClient(con)
+		s.adlClient = ad.NewAdlClient(con)
 		ctx := s.GetGrpcContext()
 		appID := s.Identity().AppID
-		fdl.SetContextAppID(ctx, appID)
+		adl.SetContextAppID(ctx, appID)
 	}
-	return fdl.Mutate(fid, &s.fdlClient)
+	return adl.Mutate(fid, &s.adlClient)
 }
 
 // GetAppConnection grpc.dial a service based on the discovery service
-func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func (s *CubexService) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
 	locationResult, err := s.discoClient.GetLocation(s.GetGrpcContext(), &discovery.LocationRequest{AppId: globalAppID})
 
@@ -566,7 +566,7 @@ func (s *FortifiService) GetAppConnection(globalAppID string, opts ...grpc.DialO
 }
 
 // GetGrpcContext context to use when communicating with other services
-func (s *FortifiService) GetGrpcContext() context.Context {
+func (s *CubexService) GetGrpcContext() context.Context {
 	md := metadata.Pairs(
 		keys.GetAppIDKey(), s.appDefinition.AppID,
 		keys.GetAppVendorKey(), s.appDefinition.Vendor,

@@ -3,7 +3,7 @@ package domfeat
 import (
 	"net/http"
 
-	"github.com/fortifi/proto-go/metaroute"
+	"github.com/cubex/proto-go/metaroute"
 )
 
 type MetaResponseWriter struct {

@@ -3,7 +3,7 @@ package i18n_test
 import (
 	"testing"
 
-	"github.com/fortifi/potens-go/i18n"
+	"github.com/cubex/potens-go/i18n"
 )
 
 func TestNewTranslations(t *testing.T) {

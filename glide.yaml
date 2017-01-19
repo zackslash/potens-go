@@ -1,6 +1,6 @@
-package: github.com/fortifi/potens-go
+package: github.com/cubex/potens-go
 import:
-- package: github.com/fortifi/proto-go
+- package: github.com/cubex/proto-go
   subpackages:
   - discovery
   - imperium

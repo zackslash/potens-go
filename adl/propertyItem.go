@@ -1,4 +1,4 @@
-package fdl
+package adl
 
 import "github.com/gogo/protobuf/proto"
 
@@ -9,17 +9,17 @@ const (
 	// DataType is the data property type
 	DataType PropertyType = 1
 
-	// CounterType is the type for FDL counter
+	// CounterType is the type for adl counter
 	CounterType PropertyType = 2
 
-	// SetType is the type for FDL set
+	// SetType is the type for adl set
 	SetType PropertyType = 3
 
-	// ListType is the type for FDL list
+	// ListType is the type for adl list
 	ListType PropertyType = 4
 )
 
-// PropertyItem is FDL's property structure
+// PropertyItem is adl's property structure
 type PropertyItem struct {
 	Property     string
 	Key          string

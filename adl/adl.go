@@ -1,10 +1,10 @@
-package fdl
+package adl
 
 import (
 	"fmt"
 
-	portcullis "github.com/fortifi/portcullis-go"
-	"github.com/fortifi/proto-go/fdl"
+	portcullis "github.com/cubex/portcullis-go"
+	"github.com/cubex/proto-go/adl"
 
 	"encoding/json"
 
@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	// FDLGAID is the FDL Global App ID
-	FDLGAID = "fortifi/fdl"
+	// adlGAID is the adl Global App ID
+	adlGAID = "cubex/adl"
 )
 
 var (
@@ -23,13 +23,13 @@ var (
 	appID string
 )
 
-// Entity is the structure for FDL mutation
+// Entity is the structure for adl mutation
 type Entity struct {
 	fid    string
 	props  PropertyItems
 	rProps PropertyItems
 	result Result
-	client fdl.FdlClient
+	client adl.AdlClient
 }
 
 // SetContextAppID sets both context and AppID
@@ -38,12 +38,12 @@ func SetContextAppID(ctxn context.Context, appid string) {
 	appID = appid
 }
 
-// CommitWithUserID writes mutation to FDL with given UserID
+// CommitWithUserID writes mutation to adl with given UserID
 func (e *Entity) CommitWithUserID(memberID string) error {
 	return commit(e, memberID)
 }
 
-// CommitWithContext writes mutation to FDL with ID available in context
+// CommitWithContext writes mutation to adl with ID available in context
 func (e *Entity) CommitWithContext(ctx context.Context) error {
 	authData := portcullis.FromContext(ctx)
 	member := authData.UserID
@@ -59,21 +59,21 @@ func (e *Entity) CommitWithContext(ctx context.Context) error {
 	return commit(e, member)
 }
 
-// Commit writes mitation to FDL with application's ID
+// Commit writes mitation to adl with application's ID
 func (e *Entity) Commit() error {
 	return commit(e, appID)
 }
 
-// retrieve starts the process of data retrieval from FDL
+// retrieve starts the process of data retrieval from adl
 func retrieve(e *Entity) (Result, error) {
-	props := []*fdl.ReadProperty{}
+	props := []*adl.ReadProperty{}
 	lst := []PropertyItem{}
 
 	for _, p := range e.rProps {
 		if p.Type != ListType {
-			props = append(props, &fdl.ReadProperty{
+			props = append(props, &adl.ReadProperty{
 				Property: p.Property,
-				Type:     fdl.PropertyType(p.Type),
+				Type:     adl.PropertyType(p.Type),
 				IsPrefix: p.IsPrefix,
 			})
 		} else {
@@ -81,7 +81,7 @@ func retrieve(e *Entity) (Result, error) {
 		}
 	}
 
-	req := fdl.ReadRequest{
+	req := adl.ReadRequest{
 		Fid:        e.fid,
 		MemberId:   "",
 		Properties: props,
@@ -116,7 +116,7 @@ func retrieve(e *Entity) (Result, error) {
 			f := []KeyValuePair{}
 			if lp.StartKey == "" && lp.EndKey == "" {
 				// list retrieve item
-				req := fdl.KeyRequest{
+				req := adl.KeyRequest{
 					Fid:      e.fid,
 					ListName: lp.Property,
 					Key:      lp.Key,
@@ -134,7 +134,7 @@ func retrieve(e *Entity) (Result, error) {
 				})
 			} else {
 				// list retrieve range
-				req := fdl.ListRangeRequest{
+				req := adl.ListRangeRequest{
 					Fid:      e.fid,
 					ListName: lp.Property,
 					StartKey: lp.StartKey,
@@ -175,15 +175,15 @@ func retrieve(e *Entity) (Result, error) {
 }
 
 func commit(e *Entity, memberID string) error {
-	props := []*fdl.Property{}
+	props := []*adl.Property{}
 	lst := []PropertyItem{}
 	for _, p := range e.props {
 		if p.Type != ListType {
-			props = append(props, &fdl.Property{
+			props = append(props, &adl.Property{
 				Property: p.Property,
-				Type:     fdl.PropertyType(p.Type),
+				Type:     adl.PropertyType(p.Type),
 				Value:    p.Value,
-				Mode:     fdl.MutationMode(p.MutationMode),
+				Mode:     adl.MutationMode(p.MutationMode),
 			})
 		} else {
 			lst = append(lst, p)
@@ -191,7 +191,7 @@ func commit(e *Entity, memberID string) error {
 	}
 
 	if len(props) > 0 {
-		req := fdl.MutationRequest{
+		req := adl.MutationRequest{
 			Fid:        e.fid,
 			MemberId:   memberID,
 			Properties: props,
@@ -204,9 +204,9 @@ func commit(e *Entity, memberID string) error {
 
 	if len(lst) > 0 {
 		for _, lp := range lst {
-			if lp.MutationMode == int32(fdl.MutationMode_WRITE) {
+			if lp.MutationMode == int32(adl.MutationMode_WRITE) {
 				// list write action
-				r := fdl.ListAddRequest{
+				r := adl.ListAddRequest{
 					Fid:      e.fid,
 					ListName: lp.Property,
 					Key:      lp.Key,
@@ -217,9 +217,9 @@ func commit(e *Entity, memberID string) error {
 				if err != nil {
 					return err
 				}
-			} else if lp.MutationMode == int32(fdl.MutationMode_REMOVE) {
+			} else if lp.MutationMode == int32(adl.MutationMode_REMOVE) {
 				// list remove action
-				r := fdl.KeyRequest{
+				r := adl.KeyRequest{
 					Fid:      e.fid,
 					ListName: lp.Property,
 					Key:      lp.Key,
@@ -252,11 +252,11 @@ func Remove(property, value string, nType PropertyType) PropertyItem {
 		Property:     property,
 		Value:        value,
 		Type:         nType,
-		MutationMode: int32(fdl.MutationMode_REMOVE),
+		MutationMode: int32(adl.MutationMode_REMOVE),
 	}
 }
 
-// Mutate starts FDL mutation on given FID
-func Mutate(fid string, c *fdl.FdlClient) *Entity {
+// Mutate starts adl mutation on given FID
+func Mutate(fid string, c *adl.AdlClient) *Entity {
 	return &Entity{fid: fid, props: []PropertyItem{}, rProps: []PropertyItem{}, client: *c}
 }

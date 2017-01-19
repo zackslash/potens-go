@@ -3,8 +3,8 @@ package webui
 import (
 	"net/url"
 
-	"github.com/fortifi/potens-go/webui/breadcrumb"
-	"github.com/fortifi/proto-go/platform"
+	"github.com/cubex/potens-go/webui/breadcrumb"
+	"github.com/cubex/proto-go/platform"
 )
 
 //CreateResponse creates a new initialised response
@@ -16,22 +16,22 @@ func CreateResponse() *platform.HTTPResponse {
 
 //SetBreadcrumb set the breadcrumb on the response
 func SetBreadcrumb(response *platform.HTTPResponse, breadcrumb breadcrumb.Breadcrumb) {
-	response.Headers["x-fort-breadcrumb"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{breadcrumb.Json()}}
+	response.Headers["x-cube-breadcrumb"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{breadcrumb.Json()}}
 }
 
 //SetPageTitle set the page title on the response
 func SetPageTitle(response *platform.HTTPResponse, PageTitle string) {
-	response.Headers["x-fort-title"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{PageTitle}}
+	response.Headers["x-cube-title"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{PageTitle}}
 }
 
 //SetBackPath set the back path on the response, relative to app route
 func SetBackPath(response *platform.HTTPResponse, BackPath string) {
-	response.Headers["x-fort-back-path"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackPath}}
+	response.Headers["x-cube-back-path"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{BackPath}}
 }
 
 //SetPageIcon set the icon url/code on the response
 func SetPageIcon(response *platform.HTTPResponse, Icon string) {
-	response.Headers["x-fort-icon"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{Icon}}
+	response.Headers["x-cube-icon"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{Icon}}
 }
 
 // PageIntergrationType
@@ -47,13 +47,13 @@ const (
 
 //SetPageIcon set the icon url/code on the response
 func SetPageIntegrations(response *platform.HTTPResponse, IntegrationType PageIntergrationType) {
-	response.Headers["x-fort-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{string(IntegrationType)}}
+	response.Headers["x-cube-integrations"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{string(IntegrationType)}}
 }
 
 func GetUrl(request *platform.HTTPRequest) *url.URL {
 	return &url.URL{
 		Scheme:     "https",
-		Host:       "apps.fortifi.io",
+		Host:       "apps.cubex.io",
 		Path:       request.Path,
 		RawPath:    request.Path,
 		ForceQuery: false,

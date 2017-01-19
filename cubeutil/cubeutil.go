@@ -1,4 +1,4 @@
-package fortutil
+package cubeutil
 
 import (
 	"errors"
@@ -33,7 +33,7 @@ func CreateID(input string) string {
 	return output
 }
 
-// ValidateID validates an ID is a valid fortifi id (Not FID)
+// ValidateID validates an ID is a valid cubex id (Not FID)
 func ValidateID(input string) error {
 	reg, _ := regexp.Compile("^[a-z0-9][a-z0-9\\-]+[a-z0-9]$")
 	if !reg.MatchString(input) {

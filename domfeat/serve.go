@@ -5,23 +5,23 @@ import (
 
 	"net/url"
 
-	"github.com/fortifi/proto-go/metaroute"
+	"github.com/cubex/proto-go/metaroute"
 	"golang.org/x/net/context"
 )
 
-var CustomerContextValue = "fort-customer"
+var UserContextValue = "cubex-user"
 
-//GetCustomerInfo retrieves customer information from the inbound request
-func GetCustomerInfo(r *http.Request) *metaroute.HTTPRequest_CustomerInformation {
-	if r.Context().Value(CustomerContextValue) != nil {
-		return r.Context().Value(CustomerContextValue).(*metaroute.HTTPRequest_CustomerInformation)
+//GetUserInfo retrieves customer information from the inbound request
+func GetUserInfo(r *http.Request) *metaroute.HTTPRequest_UserInformation {
+	if r.Context().Value(UserContextValue) != nil {
+		return r.Context().Value(UserContextValue).(*metaroute.HTTPRequest_UserInformation)
 	}
 	return nil
 }
 
-//HasCustomerInfo returns if the request is for a known customer
-func HasCustomerInfo(r *http.Request) bool {
-	return r.Context().Value(CustomerContextValue) != nil
+//HasUserInfo returns if the request is for a known customer
+func HasUserInfo(r *http.Request) bool {
+	return r.Context().Value(UserContextValue) != nil
 }
 
 //NewRequestResponse create a new HTTP Request / ResponseWriter for handling HTTP Requests
@@ -45,6 +45,6 @@ func NewRequestResponse(ctx context.Context, in *metaroute.HTTPRequest) (MetaRes
 		Headers:  make(http.Header),
 	}
 
-	ct := context.WithValue(ctx, CustomerContextValue, in.Customer)
+	ct := context.WithValue(ctx, UserContextValue, in.User)
 	return writer, request.WithContext(ct)
 }

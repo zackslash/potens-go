@@ -23,11 +23,11 @@ imports:
   version: 17b955735f15db99543cfe5ad18358a5af8c59f5
   subpackages:
   - fident
-- name: github.com/fortifi/portcullis-go
+- name: github.com/cubex/portcullis-go
   version: 039a42d518f321348081d31a5a1cf4baf147d6e8
   subpackages:
   - keys
-- name: github.com/fortifi/proto-go
+- name: github.com/cubex/proto-go
   version: 60484e1410dcd7e6056920e79a09155a967b8e5f
   subpackages:
   - discovery

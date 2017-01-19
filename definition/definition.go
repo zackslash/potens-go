@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/fortifi/potens-go/i18n"
+	"github.com/cubex/potens-go/i18n"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -333,7 +333,7 @@ type AppIntegrations struct {
 	PageActions     []AppIntegrationAction   `yaml:"page_actions"`
 }
 
-// FromConfig Populates your definition based on your app-definition.yaml
+// FromConfig Populates your definition based on your app-definition.dist.yaml
 func (d *AppDefinition) FromConfig(yamlFile string) error {
 	yamlContent, err := ioutil.ReadFile(yamlFile)
 	if err != nil {

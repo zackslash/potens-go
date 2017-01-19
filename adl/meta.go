@@ -1,7 +1,7 @@
-package fdl
+package adl
 
 import (
-	"github.com/fortifi/proto-go/fdl"
+	"github.com/cubex/proto-go/adl"
 )
 
 /*
@@ -14,7 +14,7 @@ func (e *Entity) WriteMeta(property, value string) PropertyItem {
 		Property:     property,
 		Value:        value,
 		Type:         MetaType,
-		MutationMode: int32(fdl.MutationMode_WRITE),
+		MutationMode: int32(adl.MutationMode_WRITE),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -26,7 +26,7 @@ func (e *Entity) DeleteMeta(property, value string) PropertyItem {
 		Property:     property,
 		Value:        value,
 		Type:         MetaType,
-		MutationMode: int32(fdl.MutationMode_DELETE),
+		MutationMode: int32(adl.MutationMode_DELETE),
 	}
 	e.props = append(e.props, p)
 	return p

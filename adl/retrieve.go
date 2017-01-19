@@ -1,4 +1,4 @@
-package fdl
+package adl
 
 // Property retrieves property data
 func Property(property string) PropertyItem {

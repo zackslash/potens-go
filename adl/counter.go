@@ -1,7 +1,7 @@
-package fdl
+package adl
 
 import (
-	"github.com/fortifi/proto-go/fdl"
+	"github.com/cubex/proto-go/adl"
 )
 
 /*
@@ -14,7 +14,7 @@ func (e *Entity) IncrementCounter(property string) PropertyItem {
 		Property:     property,
 		Value:        "1",
 		Type:         CounterType,
-		MutationMode: int32(fdl.MutationMode_APPEND),
+		MutationMode: int32(adl.MutationMode_APPEND),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -26,7 +26,7 @@ func (e *Entity) DecrementCounter(property string) PropertyItem {
 		Property:     property,
 		Value:        "1",
 		Type:         CounterType,
-		MutationMode: int32(fdl.MutationMode_REMOVE),
+		MutationMode: int32(adl.MutationMode_REMOVE),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -38,7 +38,7 @@ func (e *Entity) ResetCounter(property string) PropertyItem {
 		Property:     property,
 		Value:        "0",
 		Type:         CounterType,
-		MutationMode: int32(fdl.MutationMode_WRITE),
+		MutationMode: int32(adl.MutationMode_WRITE),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -49,7 +49,7 @@ func (e *Entity) RemoveCounter(property string) PropertyItem {
 	p := PropertyItem{
 		Property:     property,
 		Type:         CounterType,
-		MutationMode: int32(fdl.MutationMode_DELETE),
+		MutationMode: int32(adl.MutationMode_DELETE),
 	}
 	e.props = append(e.props, p)
 	return p

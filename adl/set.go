@@ -1,6 +1,6 @@
-package fdl
+package adl
 
-import "github.com/fortifi/proto-go/fdl"
+import "github.com/cubex/proto-go/adl"
 
 /*
 * Set modifiers
@@ -12,7 +12,7 @@ func (e *Entity) AddSetItem(property, key string) PropertyItem {
 		Property:     property,
 		Value:        key,
 		Type:         SetType,
-		MutationMode: int32(fdl.MutationMode_WRITE),
+		MutationMode: int32(adl.MutationMode_WRITE),
 	}
 	e.props = append(e.props, p)
 	return p
@@ -24,7 +24,7 @@ func (e *Entity) RemoveSetItem(property, key string) PropertyItem {
 		Property:     property,
 		Value:        key,
 		Type:         SetType,
-		MutationMode: int32(fdl.MutationMode_REMOVE),
+		MutationMode: int32(adl.MutationMode_REMOVE),
 	}
 	e.props = append(e.props, p)
 	return p

@@ -14,7 +14,7 @@ type AppIdentity struct {
 	KeyHandle    string `json:"key_handle"`
 }
 
-// FromJSONFile Populates your identity based on your app-identity.json
+// FromJSONFile Populates your identity based on your app-identity.dist.json
 func (i *AppIdentity) FromJSONFile(jsonFile string) error {
 	jsonContent, err := ioutil.ReadFile(jsonFile)
 	if err != nil {

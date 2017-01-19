@@ -2,7 +2,7 @@
 # SAMPLE DEFINITION FILE #
 ##########################
 
-type: fortifi.platform.application
+type: cubex.platform.application
 config_version: 1.0
 
 #######################
@@ -13,10 +13,10 @@ config_version: 1.0
 version: 1.0
 
 #Your vendor ID
-vendor: vendorid
+vendor: vendor-id
 
 #ID of your app
-app_id: appid
+app_id: app-id
 
 #The group this app belongs to (used for micro apps)
 group:
@@ -45,7 +45,7 @@ description:
   en: Management of base customer information
   fr: Gestion de l'information à la clientèle de base
 
-#fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
+#cube-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
 icon: social:group
 
 #######################
@@ -61,7 +61,7 @@ navigation:
     description:
       en: Show all your customers
       fr: Montrer tous vos clients
-    #fort-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
+    #cube-icon value, can be iron icon name, eg. icons:3d_rotation, or an svg
     icon: social:group
     #Path to follow (relative to your application)
     path: customers/
@@ -116,7 +116,7 @@ listener:
   config:
     - name:
         en: url
-      value: http://events.yourdomain.com/fortifi
+      value: http://events.yourdomain.com/cubex
 
 #######################
 #    Quick Actions    #
