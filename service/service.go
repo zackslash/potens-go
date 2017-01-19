@@ -186,7 +186,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Cube
 
 	if appIdent == nil {
 		appIdent = &identity.AppIdentity{}
-		err := appIdent.FromJSONFile(s.relPath("app-identity.dist.json"))
+		err := appIdent.FromJSONFile(s.relPath("app-identity.json"))
 		if err != nil {
 			return s, err
 		}
@@ -194,7 +194,7 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Cube
 
 	if appDef == nil {
 		appDef = &definition.AppDefinition{}
-		err := appDef.FromConfig(s.relPath("app-definition.dist.yaml"))
+		err := appDef.FromConfig(s.relPath("app-definition.yaml"))
 		if err != nil {
 			return s, err
 		}
