@@ -537,7 +537,7 @@ func (s *CubexService) Definition() *definition.AppDefinition {
 }
 
 // FDL retrives FDL instance
-func (s *CubexService) FDL(fid string) *adl.Entity {
+func (s *CubexService) ADL(fid string) *adl.Entity {
 	if s.adlClient == nil {
 		con, err := s.GetAppConnection(adl.ADLGAID)
 		if err != nil {
