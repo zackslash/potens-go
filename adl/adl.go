@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	// adlGAID is the adl Global App ID
-	adlGAID = "cubex/adl"
+	// ADLGAID is the adl Global App ID
+	ADLGAID = "cubex/adl"
 )
 
 var (
