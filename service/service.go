@@ -19,8 +19,8 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/cubex/portcullis-go/keys"
-	"github.com/cubex/potens-go/definition"
 	"github.com/cubex/potens-go/adl"
+	"github.com/cubex/potens-go/definition"
 	"github.com/cubex/potens-go/i18n"
 	"github.com/cubex/potens-go/identity"
 	ad "github.com/cubex/proto-go/adl"
@@ -539,7 +539,7 @@ func (s *CubexService) Definition() *definition.AppDefinition {
 // FDL retrives FDL instance
 func (s *CubexService) FDL(fid string) *adl.Entity {
 	if s.adlClient == nil {
-		con, err := s.GetAppConnection(adl.FDLGAID)
+		con, err := s.GetAppConnection(adl.ADLGAID)
 		if err != nil {
 			s.Logger.Fatal("Unable to connect to FDL", zap.String("error", err.Error()))
 		}
