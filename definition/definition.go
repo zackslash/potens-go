@@ -7,21 +7,21 @@ import (
 	"github.com/cubex/potens-go/i18n"
 
 	yaml "gopkg.in/yaml.v2"
+	"github.com/cubex/potens-go/category"
 )
 
 // AppDefinition Application Definition
 type AppDefinition struct {
-	Type                      string
+	Type                      AppType
 	ConfigVersion             float32 `yaml:"config_version"`
 	Version                   float32
 	Vendor                    string
 	TrustedVendor             bool
 	AppID                     string `yaml:"app_id"`
 	GlobalAppID               string
-	Group                     string
-	Category                  string
+	GroupID                   string`yaml:"group_id"`
+	Category                  category.CatKey
 	Priority                  int32
-	AppType                   AppType `yaml:"app_type"`
 	Name                      i18n.Translations
 	Description               i18n.Translations
 	Icon                      string
@@ -45,16 +45,17 @@ type AppType string
 
 //App Types
 const (
-	// AppTypeEmployee Employee
-	AppTypeEmployee AppType = "employee"
-	// AppTypeUser User
-	AppTypeUser AppType = "user"
-	// AppTypePublisher Publisher
-	AppTypePublisher AppType = "publisher"
-	// AppTypeCustomer Customer
-	AppTypeCustomer AppType = "customer"
-	// AppTypeDomainFeature Domain Feature
-	AppTypeDomainFeature AppType = "domain.feature"
+	// AppTypePlatformApplication Standard Application
+	AppTypePlatformApplication AppType = "cubex.platform.application"
+
+	// AppTypePlatformUserApplication User Application
+	AppTypePlatformUserApplication AppType = "cubex.platform.user-application"
+
+	// AppTypeDomainHandler Domain Handler
+	AppTypeDomainHandler AppType = "cubex.platform.domain.handler"
+
+	// AppTypeDomainApplication Domain Application
+	AppTypeDomainApplication AppType = "cubex.platform.domain.application"
 )
 
 // AppNavigation Application Navigation ITem
