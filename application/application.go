@@ -436,14 +436,15 @@ func (s *CubexApplication) Online() error {
 // Close take your service offline, and if running locally, also shutdown
 func (s *CubexApplication) Close() error {
 	err := s.Offline()
-	if err == nil && s.CubexDomain != DefaultCubexDomain {
-		return s.Shutdown()
-	}
 
-	s.undercroftClient.DeRegisterApp(s.GetGrpcContext(), &undercroft.AppRequest{
-		VendorId:       s.appDefinition.Vendor,
-		Id:             s.appDefinition.AppID,
-	})
+	if s.CubexDomain != DefaultCubexDomain {
+		err = s.Shutdown()
+
+		s.undercroftClient.DeRegisterApp(s.GetGrpcContext(), &undercroft.AppRequest{
+			VendorId:       s.appDefinition.Vendor,
+			Id:             s.appDefinition.AppID,
+		})
+	}
 
 	return err
 }
