@@ -81,7 +81,6 @@ type Entity struct {
 	Plural      i18n.Translations
 	Description i18n.Translations
 	Path        string
-	Hovercard   string
 }
 
 // ListenerRepositoryType Service to listen to events on
