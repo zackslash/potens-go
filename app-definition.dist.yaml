@@ -95,6 +95,18 @@ entities:
     #Place {fid} for fid replacement within path
     #(optional)Relative path within your app to handle the view of this entity
     path: view/{fid}
+    edges:
+      - id: friend-of
+        bi_direction: true
+        label: "%s is a friend of %s"
+        restricted: true
+        restrictions:
+          - vendor_key: PE
+            app_key: RS
+            type: ON
+        meta:
+          - where-met
+          - found-by
 
 #######################
 #    Event Listener   #

@@ -72,7 +72,7 @@ type AppNavigation struct {
 type AppEntities struct {
 	AppKey    string            `yaml:"app_key"`
 	VendorKey string            `yaml:"vendor_key"`
-	Entities  map[string]Entity `yaml:",inline"`
+	Entities  map[string]Entity `yaml:",inline"` //type|data
 }
 
 // Entity Definition of a single FDL data type
@@ -81,6 +81,22 @@ type Entity struct {
 	Plural      i18n.Translations
 	Description i18n.Translations
 	Path        string
+	Edges       []Edge
+}
+
+type EntityType struct {
+	AppKey    string            `yaml:"app_key"`
+	VendorKey string            `yaml:"vendor_key"`
+	Type      string
+}
+
+type Edge struct {
+	ID            string                    //e.g. friend-of
+	BiDirectional bool`yaml:"bi_direction"` //Stored the reverse edge
+	Meta          []string                  //e.g. information about this edge
+	Label         string                    // %src% is a friend of %dst%
+	Restricted    bool
+	Restrictions  []EntityType
 }
 
 // ListenerRepositoryType Service to listen to events on
