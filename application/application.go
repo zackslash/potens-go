@@ -439,6 +439,12 @@ func (s *CubexApplication) Close() error {
 	if err == nil && s.CubexDomain != DefaultCubexDomain {
 		return s.Shutdown()
 	}
+
+	s.undercroftClient.DeRegisterApp(s.GetGrpcContext(), &undercroft.AppRequest{
+		VendorId:       s.appDefinition.Vendor,
+		Id:             s.appDefinition.AppID,
+	})
+
 	return err
 }
 
