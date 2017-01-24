@@ -34,6 +34,11 @@ func SetPageIcon(response *platform.HTTPResponse, Icon string) {
 	response.Headers["x-cube-icon"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{Icon}}
 }
 
+//SetPageFID set the FID for the entity being shown on the page
+func SetPageFID(response *platform.HTTPResponse, FID string) {
+	response.Headers["x-cube-page-fid"] = &platform.HTTPResponse_HTTPHeaderParameter{Values: []string{FID}}
+}
+
 // PageIntergrationType
 type PageIntergrationType string
 
