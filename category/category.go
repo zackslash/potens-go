@@ -8,6 +8,7 @@ const (
 	// CatKeyKeyUnknown Unknown
 	CatKeyUnknown         CatKey = "unknown"
 	CatKeySupport         CatKey = "support"
+	CatKeyCustomers       CatKey = "customers"
 	CatKeyFinance         CatKey = "finance"
 	CatKeyLogistics       CatKey = "logistics"
 	CatKeyPurchasing      CatKey = "purchasing"
