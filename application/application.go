@@ -240,7 +240,7 @@ func (s *CubexApplication) Start(collector zipkin.Collector) error {
 	var span opentracing.Span
 
 	s.Logger.Info("Starting App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
-	s.Logger.Info("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
+	s.Logger.Debug("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
 
 	flag.Parse()
 	log.SetFlags(0)
@@ -390,7 +390,7 @@ func (s *CubexApplication) Start(collector zipkin.Collector) error {
 	if !regResult.Recorded {
 		s.Logger.Fatal("Failed to register with the discovery service")
 	} else {
-		s.Logger.Info("Registered with Discovery Service")
+		s.Logger.Debug("Registered with Discovery Service")
 	}
 	return nil
 }
@@ -509,7 +509,7 @@ func (s *CubexApplication) getCerts() error {
 	s.imperiumCertificate = []byte(response.Certificate)
 	s.imperiumKey = []byte(response.PrivateKey)
 
-	s.Logger.Info("Received TLS Certificates", zap.String("hostname", s.hostname))
+	s.Logger.Debug("Received TLS Certificates", zap.String("hostname", s.hostname))
 
 	return nil
 }
