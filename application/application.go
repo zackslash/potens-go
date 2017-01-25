@@ -16,8 +16,6 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/net/context"
-
 	"github.com/cubex/portcullis-go/keys"
 	"github.com/cubex/potens-go/adl"
 	"github.com/cubex/potens-go/definition"
@@ -33,6 +31,7 @@ import (
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/satori/go.uuid"
 	"github.com/uber-go/zap"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -66,14 +65,14 @@ type CubexApplication struct {
 	//Tracer open tracer
 	Tracer opentracing.Tracer
 
-	parsedEnv        bool
-	imperiumService  string
-	discoveryService string
-	registryService  string
-	fidentService    string
-	authToken        string
-	pk               *rsa.PrivateKey
-	kh               string
+	parsedEnv         bool
+	imperiumService   string
+	discoveryService  string
+	undercroftService string
+	fidentService     string
+	authToken         string
+	pk                *rsa.PrivateKey
+	kh                string
 }
 
 // DefaultCubexDomain default domain to connect to cubex services
@@ -88,7 +87,7 @@ func (s *CubexApplication) parseEnv() {
 
 	s.discoveryService = os.Getenv("CUBEX_DISCOVERY_LOCATION")
 	if s.discoveryService == "" {
-		s.discoveryService = "discovery-cubex." + s.CubexDomain
+		s.discoveryService = "discovery.cubex." + s.CubexDomain
 	}
 
 	discoPort := os.Getenv("CUBEX_DISCOVERY_PORT")
@@ -100,7 +99,7 @@ func (s *CubexApplication) parseEnv() {
 
 	s.imperiumService = os.Getenv("CUBEX_IMPERIUM_LOCATION")
 	if s.imperiumService == "" {
-		s.imperiumService = "imperium-cubex." + s.CubexDomain
+		s.imperiumService = "imperium." + s.CubexDomain
 	}
 
 	imperiumPort := os.Getenv("CUBEX_IMPERIUM_PORT")
@@ -110,16 +109,16 @@ func (s *CubexApplication) parseEnv() {
 		s.imperiumService += ":" + imperiumPort
 	}
 
-	s.registryService = os.Getenv("CUBEX_REGISTRY_LOCATION")
-	if s.registryService == "" {
-		s.registryService = "registry-cubex." + s.CubexDomain
+	s.undercroftService = os.Getenv("CUBEX_UNDERCROFT_LOCATION")
+	if s.undercroftService == "" {
+		s.undercroftService = "undercroft.cubex." + s.CubexDomain
 	}
 
-	registryPort := os.Getenv("CUBEX_REGISTRY_PORT")
-	if registryPort == "" {
-		s.registryService += ":" + defaultPort
+	undercroftPort := os.Getenv("CUBEX_UNDERCROFT_PORT")
+	if undercroftPort == "" {
+		s.undercroftService += ":" + defaultPort
 	} else {
-		s.registryService += ":" + registryPort
+		s.undercroftService += ":" + undercroftPort
 	}
 
 	s.fidentService = os.Getenv("FIDENT_LOCATION")
@@ -343,7 +342,7 @@ func (s *CubexApplication) Start(collector zipkin.Collector) error {
 	}
 
 	if s.undercroftClient == nil {
-		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		regConn, err := grpc.Dial(s.undercroftService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
 			s.Logger.Fatal(err.Error())
@@ -543,12 +542,12 @@ func (s *CubexApplication) Definition() *definition.AppDefinition {
 	return s.appDefinition
 }
 
-// FDL retrives FDL instance
+// ADL retrives ADL instance
 func (s *CubexApplication) ADL(fid string) *adl.Entity {
 	if s.adlClient == nil {
 		con, err := s.GetAppConnection(adl.ADLGAID)
 		if err != nil {
-			s.Logger.Fatal("Unable to connect to FDL", zap.String("error", err.Error()))
+			s.Logger.Fatal("Unable to connect to ADL", zap.String("error", err.Error()))
 		}
 		s.adlClient = ad.NewAdlClient(con)
 		ctx := s.GetGrpcContext()
