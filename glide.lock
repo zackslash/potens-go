@@ -1,22 +1,22 @@
 hash: 93d1b164025d07264be1ceef233df068d353e4d37811b5bf92765695c400d141
-updated: 2017-01-24T11:43:44.895990139Z
+updated: 2017-01-26T15:21:02.194289414Z
 imports:
 - name: github.com/apache/thrift
-  version: 84d6af4cf903571319e0ebddd7beb12bc93fb752
+  version: 71eba643ddc10bd2a9f614348567bfc1f63d8d06
   subpackages:
   - lib/go/thrift
 - name: github.com/cubex/portcullis-go
-  version: 039a42d518f321348081d31a5a1cf4baf147d6e8
+  version: 9e70d5267f7cee48865d3be3dc652423085a1f15
   subpackages:
   - keys
 - name: github.com/cubex/proto-go
-  version: 005850890462a8ad5c27827279f7f05b01adfca0
+  version: af82f03036b8ce030cabae46074144cf1e86250b
   subpackages:
   - adl
+  - applications
   - discovery
   - imperium
   - metaroute
-  - platform
   - undercroft
 - name: github.com/davecgh/go-spew
   version: 346938d642f2ec3594ed81d874461961cd0faa76
@@ -36,48 +36,54 @@ imports:
   version: 17b955735f15db99543cfe5ad18358a5af8c59f5
   subpackages:
   - fident
-- name: github.com/fortifi/portcullis-go
-  version: 9e70d5267f7cee48865d3be3dc652423085a1f15
-  subpackages:
-  - keys
+- name: github.com/go-logfmt/logfmt
+  version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
 - name: github.com/gogo/protobuf
-  version: 8d70fb3182befc465c4a1eac8ad4d38ff49778e2
+  version: fb8a359905af6e2b6517cccda0ba25915322ee88
   subpackages:
   - proto
 - name: github.com/golang/protobuf
-  version: df1d3ca07d2d07bba352d5b73c4313b4e2a6203e
+  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
   subpackages:
   - proto
   - ptypes/timestamp
 - name: github.com/golang/snappy
-  version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
+  version: 7db9049039a047d955fe8c19b83c8ff5abd765c7
 - name: github.com/klauspost/crc32
   version: cb6bfca970f6908083f26f39a79009d608efd5cd
+- name: github.com/kr/logfmt
+  version: b84e30acd515aadc4b783ad4ff83aff3299bdfe0
 - name: github.com/opentracing/opentracing-go
-  version: 902ca977fd85455c364050f985eba376b44315f0
+  version: 5e5abf838007b08f96ae057bc182636a178da0b9
   subpackages:
   - ext
   - log
 - name: github.com/openzipkin/zipkin-go-opentracing
-  version: e877b8e9d1069eaedfe4f27e9b6a51cfe20073c9
+  version: 594640b9ef7e5c994e8d9499359d693c032d738c
   subpackages:
   - _thrift/gen-go/scribe
   - _thrift/gen-go/zipkincore
   - flag
   - types
   - wire
+- name: github.com/pierrec/lz4
+  version: 5c9560bfa9ace2bf86080bf40d46b34ae44604df
+- name: github.com/pierrec/xxHash
+  version: 5a004441f897722c627870a981d02b29924215fa
+  subpackages:
+  - xxHash32
 - name: github.com/rcrowley/go-metrics
-  version: ab2277b1c5d15c3cba104e9cbddbdfc622df5ad8
+  version: 1f30fe9094a513ce4c700b9a54458bbb0c96996c
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/Shopify/sarama
-  version: fd498173ae2bfc49a2b4eb19353241317785e7e6
+  version: 0fb560e5f7fbcaee2f75e3c34174320709f69944
 - name: github.com/uber-go/atomic
-  version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
+  version: 3b8db5e93c4c02efbc313e17b2e796b0914a01fb
 - name: github.com/uber-go/zap
-  version: dd147206a25aad11c300c661617a2fe26b4a81a7
+  version: a5783ee4b216a927da8f839c45cfbf9d694e1467
 - name: golang.org/x/net
-  version: cf4effbb9db1f3ef07f7e1891402991b6afbb276
+  version: f2499483f923065a842d38eb4c7f1927e6fc6e6d
   subpackages:
   - context
   - http2
@@ -98,5 +104,5 @@ imports:
   - peer
   - transport
 - name: gopkg.in/yaml.v2
-  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+  version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
 testImports: []
