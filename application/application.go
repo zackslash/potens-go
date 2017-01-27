@@ -21,6 +21,7 @@ import (
 	"github.com/cubex/potens-go/definition"
 	"github.com/cubex/potens-go/i18n"
 	"github.com/cubex/potens-go/identity"
+	"github.com/cubex/potens-go/websocks"
 	ad "github.com/cubex/proto-go/adl"
 	"github.com/cubex/proto-go/discovery"
 	"github.com/cubex/proto-go/imperium"
@@ -58,6 +59,7 @@ type CubexApplication struct {
 	currentStatus       discovery.ServiceStatus
 	CubexDomain         string
 	adlClient           ad.AdlClient
+	socketHandler       *websocks.Handler
 
 	//Logger used for standard logging
 	Logger zap.Logger
@@ -249,7 +251,7 @@ func (s *CubexApplication) Start(collector zipkin.Collector) error {
 		minPort := 50060
 		maxPort := 55555
 		rand.Seed(time.Now().UTC().UnixNano())
-		s.port = int32(rand.Intn(maxPort - minPort) + minPort)
+		s.port = int32(rand.Intn(maxPort-minPort) + minPort)
 	}
 
 	if collector != nil {
@@ -440,8 +442,8 @@ func (s *CubexApplication) Close() error {
 		err = s.Shutdown()
 
 		s.undercroftClient.DeRegisterApp(s.GetGrpcContext(), &undercroft.AppRequest{
-			VendorId:       s.appDefinition.Vendor,
-			Id:             s.appDefinition.AppID,
+			VendorId: s.appDefinition.Vendor,
+			Id:       s.appDefinition.AppID,
 		})
 	}
 
@@ -555,6 +557,18 @@ func (s *CubexApplication) ADL(fid string) *adl.Entity {
 		adl.SetContextAppID(ctx, appID)
 	}
 	return adl.Mutate(fid, &s.adlClient)
+}
+
+// Socket helper for sockets
+func (s *CubexApplication) Socket() *websocks.Handler {
+	if s.socketHandler == nil {
+		con, err := s.GetAppConnection(websocks.SOCKETSGAID)
+		if err != nil {
+			s.Logger.Fatal("Unable to connect to Sockets Server", zap.String("error", err.Error()))
+		}
+		s.socketHandler = websocks.NewHandler(con, s.GetGrpcContext(), s.appDefinition.Vendor, s.appDefinition.AppID)
+	}
+	return s.socketHandler
 }
 
 // GetAppConnection grpc.dial a service based on the discovery service
