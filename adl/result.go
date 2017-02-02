@@ -13,9 +13,8 @@ type Result struct {
 
 // KeyValuePair item
 type KeyValuePair struct {
-	Key      string
-	Value    string
-	property string
+	Key   string
+	Value string
 }
 
 // ResultItem is a single query result
