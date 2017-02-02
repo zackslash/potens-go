@@ -22,13 +22,10 @@ app_id: app-id
 group:
 
 #Category to place this app in
-category: crm
+category: unknown
 
 #Priority of this app (0-1000) - see docs on how to configure priority
 priority: 500
-
-#App Type (employee, publisher, customer, domain.feature
-app_type: employee
 
 #######################
 # Display Information #
@@ -98,8 +95,18 @@ entities:
     #Place {fid} for fid replacement within path
     #(optional)Relative path within your app to handle the view of this entity
     path: view/{fid}
-    #(optional)Path to retrieve hovercard data (slow hovercard urls may be disabled automatically)
-    hovercard: /hover/{fid}
+    edges:
+      - id: friend-of
+        bi_direction: true
+        label: "%s is a friend of %s"
+        restricted: true
+        restrictions:
+          - vendor_key: PE
+            app_key: RS
+            type: ON
+        meta:
+          - where-met
+          - found-by
 
 #######################
 #    Event Listener   #

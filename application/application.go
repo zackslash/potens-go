@@ -1,4 +1,4 @@
-package service
+package application
 
 import (
 	"crypto/rsa"
@@ -16,13 +16,12 @@ import (
 	"strconv"
 	"time"
 
-	"golang.org/x/net/context"
-
 	"github.com/cubex/portcullis-go/keys"
 	"github.com/cubex/potens-go/adl"
 	"github.com/cubex/potens-go/definition"
 	"github.com/cubex/potens-go/i18n"
 	"github.com/cubex/potens-go/identity"
+	"github.com/cubex/potens-go/websocks"
 	ad "github.com/cubex/proto-go/adl"
 	"github.com/cubex/proto-go/discovery"
 	"github.com/cubex/proto-go/imperium"
@@ -33,6 +32,7 @@ import (
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	"github.com/satori/go.uuid"
 	"github.com/uber-go/zap"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -43,8 +43,8 @@ var (
 	parseEnv = flag.Bool("parse-env", true, "Set to false to use production defaults")
 )
 
-//CubexService an instance of an application service
-type CubexService struct {
+//CubexApplication an instance of an application service
+type CubexApplication struct {
 	appDefinition       *definition.AppDefinition
 	appIdentity         *identity.AppIdentity
 	port                int32
@@ -59,6 +59,7 @@ type CubexService struct {
 	currentStatus       discovery.ServiceStatus
 	CubexDomain         string
 	adlClient           ad.AdlClient
+	socketHandler       *websocks.Handler
 
 	//Logger used for standard logging
 	Logger zap.Logger
@@ -66,20 +67,20 @@ type CubexService struct {
 	//Tracer open tracer
 	Tracer opentracing.Tracer
 
-	parsedEnv        bool
-	imperiumService  string
-	discoveryService string
-	registryService  string
-	fidentService    string
-	authToken        string
-	pk               *rsa.PrivateKey
-	kh               string
+	parsedEnv         bool
+	imperiumService   string
+	discoveryService  string
+	undercroftService string
+	fidentService     string
+	authToken         string
+	pk                *rsa.PrivateKey
+	kh                string
 }
 
 // DefaultCubexDomain default domain to connect to cubex services
 const DefaultCubexDomain = "services.cubex.io"
 
-func (s *CubexService) parseEnv() {
+func (s *CubexApplication) parseEnv() {
 	defaultPort := "50051"
 	cubexDomain := os.Getenv("CUBEX_DOMAIN")
 	if cubexDomain != "" {
@@ -88,7 +89,7 @@ func (s *CubexService) parseEnv() {
 
 	s.discoveryService = os.Getenv("CUBEX_DISCOVERY_LOCATION")
 	if s.discoveryService == "" {
-		s.discoveryService = "discovery-cubex." + s.CubexDomain
+		s.discoveryService = "discovery.cubex." + s.CubexDomain
 	}
 
 	discoPort := os.Getenv("CUBEX_DISCOVERY_PORT")
@@ -100,7 +101,7 @@ func (s *CubexService) parseEnv() {
 
 	s.imperiumService = os.Getenv("CUBEX_IMPERIUM_LOCATION")
 	if s.imperiumService == "" {
-		s.imperiumService = "imperium-cubex." + s.CubexDomain
+		s.imperiumService = "imperium." + s.CubexDomain
 	}
 
 	imperiumPort := os.Getenv("CUBEX_IMPERIUM_PORT")
@@ -110,16 +111,16 @@ func (s *CubexService) parseEnv() {
 		s.imperiumService += ":" + imperiumPort
 	}
 
-	s.registryService = os.Getenv("CUBEX_REGISTRY_LOCATION")
-	if s.registryService == "" {
-		s.registryService = "registry-cubex." + s.CubexDomain
+	s.undercroftService = os.Getenv("CUBEX_UNDERCROFT_LOCATION")
+	if s.undercroftService == "" {
+		s.undercroftService = "undercroft.cubex." + s.CubexDomain
 	}
 
-	registryPort := os.Getenv("CUBEX_REGISTRY_PORT")
-	if registryPort == "" {
-		s.registryService += ":" + defaultPort
+	undercroftPort := os.Getenv("CUBEX_UNDERCROFT_PORT")
+	if undercroftPort == "" {
+		s.undercroftService += ":" + defaultPort
 	} else {
-		s.registryService += ":" + registryPort
+		s.undercroftService += ":" + undercroftPort
 	}
 
 	s.fidentService = os.Getenv("FIDENT_LOCATION")
@@ -147,21 +148,21 @@ func (s *CubexService) parseEnv() {
 }
 
 //SetPort sets the gRPC port
-func (s *CubexService) SetPort(port int32) {
+func (s *CubexApplication) SetPort(port int32) {
 	s.port = port
 }
 
 //GetPort gets the gRPC port
-func (s *CubexService) GetPort() int32 {
+func (s *CubexApplication) GetPort() int32 {
 	return s.port
 }
 
 //SetDiscoveryClient set a shared discovery client
-func (s *CubexService) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
+func (s *CubexApplication) SetDiscoveryClient(discoClient discovery.DiscoveryClient) {
 	s.discoClient = discoClient
 }
 
-func (s *CubexService) relPath(file string) string {
+func (s *CubexApplication) relPath(file string) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		s.Logger.Fatal(err.Error())
@@ -170,9 +171,9 @@ func (s *CubexService) relPath(file string) string {
 }
 
 //New get a new instance of a service
-func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (CubexService, error) {
+func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (CubexApplication, error) {
 
-	s := CubexService{}
+	s := CubexApplication{}
 	s.Logger = zap.New(zap.NewJSONEncoder())
 	s.CubexDomain = DefaultCubexDomain
 
@@ -235,13 +236,13 @@ func New(appDef *definition.AppDefinition, appIdent *identity.AppIdentity) (Cube
 }
 
 // Start your service, retrieves tls Certificate to server, and registers with discovery service
-func (s *CubexService) Start(collector zipkin.Collector) error {
+func (s *CubexApplication) Start(collector zipkin.Collector) error {
 
 	var err error
 	var span opentracing.Span
 
 	s.Logger.Info("Starting App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
-	s.Logger.Info("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
+	s.Logger.Debug("Authing App", zap.String("identity", s.appIdentity.IdentityID), zap.String("type", s.appIdentity.IdentityType))
 
 	flag.Parse()
 	log.SetFlags(0)
@@ -343,7 +344,7 @@ func (s *CubexService) Start(collector zipkin.Collector) error {
 	}
 
 	if s.undercroftClient == nil {
-		regConn, err := grpc.Dial(s.registryService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+		regConn, err := grpc.Dial(s.undercroftService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 
 		if err != nil {
 			s.Logger.Fatal(err.Error())
@@ -391,12 +392,12 @@ func (s *CubexService) Start(collector zipkin.Collector) error {
 	if !regResult.Recorded {
 		s.Logger.Fatal("Failed to register with the discovery service")
 	} else {
-		s.Logger.Info("Registered with Discovery Service")
+		s.Logger.Debug("Registered with Discovery Service")
 	}
 	return nil
 }
 
-func (s *CubexService) heartBeat() {
+func (s *CubexApplication) heartBeat() {
 	if s.currentStatus == discovery.ServiceStatus_ONLINE {
 		for {
 			s.discoClient.HeartBeat(s.GetGrpcContext(), &discovery.HeartBeatRequest{
@@ -410,7 +411,7 @@ func (s *CubexService) heartBeat() {
 }
 
 // Online take your service online
-func (s *CubexService) Online() error {
+func (s *CubexApplication) Online() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -434,16 +435,23 @@ func (s *CubexService) Online() error {
 }
 
 // Close take your service offline, and if running locally, also shutdown
-func (s *CubexService) Close() error {
+func (s *CubexApplication) Close() error {
 	err := s.Offline()
-	if err == nil && s.CubexDomain != DefaultCubexDomain {
-		return s.Shutdown()
+
+	if s.CubexDomain != DefaultCubexDomain {
+		err = s.Shutdown()
+
+		s.undercroftClient.DeRegisterApp(s.GetGrpcContext(), &undercroft.AppRequest{
+			VendorId: s.appDefinition.Vendor,
+			Id:       s.appDefinition.AppID,
+		})
 	}
+
 	return err
 }
 
 // Offline take your service offline
-func (s *CubexService) Offline() error {
+func (s *CubexApplication) Offline() error {
 	statusResult, err := s.discoClient.Status(s.GetGrpcContext(), &discovery.StatusRequest{
 		AppId:        s.appDefinition.GlobalAppID,
 		InstanceUuid: s.instanceID,
@@ -465,7 +473,7 @@ func (s *CubexService) Offline() error {
 }
 
 // Shutdown unregisters your service from discovery
-func (s *CubexService) Shutdown() error {
+func (s *CubexApplication) Shutdown() error {
 	s.Logger.Info("Shutting Down App", zap.String("gaid", s.appDefinition.GlobalAppID), zap.String("name", i18n.NewTranslatable(s.appDefinition.Name).Get("en")))
 
 	deregResult, err := s.discoClient.DeRegister(s.GetGrpcContext(), &discovery.DeRegisterRequest{
@@ -485,7 +493,7 @@ func (s *CubexService) Shutdown() error {
 	return nil
 }
 
-func (s *CubexService) getCerts() error {
+func (s *CubexApplication) getCerts() error {
 
 	imperiumConnection, err := grpc.Dial(s.imperiumService, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
 	if err != nil {
@@ -503,13 +511,13 @@ func (s *CubexService) getCerts() error {
 	s.imperiumCertificate = []byte(response.Certificate)
 	s.imperiumKey = []byte(response.PrivateKey)
 
-	s.Logger.Info("Received TLS Certificates", zap.String("hostname", s.hostname))
+	s.Logger.Debug("Received TLS Certificates", zap.String("hostname", s.hostname))
 
 	return nil
 }
 
 // CreateServer creates a gRPC server with your tls certificates
-func (s *CubexService) CreateServer() (net.Listener, *grpc.Server, error) {
+func (s *CubexApplication) CreateServer() (net.Listener, *grpc.Server, error) {
 
 	lis, err := net.Listen("tcp", s.hostname+":"+strconv.FormatInt(int64(s.port), 10))
 	if err != nil {
@@ -527,21 +535,21 @@ func (s *CubexService) CreateServer() (net.Listener, *grpc.Server, error) {
 }
 
 // Identity retrieves your identity
-func (s *CubexService) Identity() *identity.AppIdentity {
+func (s *CubexApplication) Identity() *identity.AppIdentity {
 	return s.appIdentity
 }
 
 // Definition retrieves your definition
-func (s *CubexService) Definition() *definition.AppDefinition {
+func (s *CubexApplication) Definition() *definition.AppDefinition {
 	return s.appDefinition
 }
 
-// FDL retrives FDL instance
-func (s *CubexService) FDL(fid string) *adl.Entity {
+// ADL retrives ADL instance
+func (s *CubexApplication) ADL(fid string) *adl.Entity {
 	if s.adlClient == nil {
 		con, err := s.GetAppConnection(adl.ADLGAID)
 		if err != nil {
-			s.Logger.Fatal("Unable to connect to FDL", zap.String("error", err.Error()))
+			s.Logger.Fatal("Unable to connect to ADL", zap.String("error", err.Error()))
 		}
 		s.adlClient = ad.NewAdlClient(con)
 		ctx := s.GetGrpcContext()
@@ -551,8 +559,20 @@ func (s *CubexService) FDL(fid string) *adl.Entity {
 	return adl.Mutate(fid, &s.adlClient)
 }
 
+// Socket helper for sockets
+func (s *CubexApplication) Socket() *websocks.Handler {
+	if s.socketHandler == nil {
+		con, err := s.GetAppConnection(websocks.SOCKETSGAID)
+		if err != nil {
+			s.Logger.Fatal("Unable to connect to Sockets Server", zap.String("error", err.Error()))
+		}
+		s.socketHandler = websocks.NewHandler(con, s.GetGrpcContext(), s.appDefinition.Vendor, s.appDefinition.AppID)
+	}
+	return s.socketHandler
+}
+
 // GetAppConnection grpc.dial a service based on the discovery service
-func (s *CubexService) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func (s *CubexApplication) GetAppConnection(globalAppID string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 
 	locationResult, err := s.discoClient.GetLocation(s.GetGrpcContext(), &discovery.LocationRequest{AppId: globalAppID})
 
@@ -566,7 +586,7 @@ func (s *CubexService) GetAppConnection(globalAppID string, opts ...grpc.DialOpt
 }
 
 // GetGrpcContext context to use when communicating with other services
-func (s *CubexService) GetGrpcContext() context.Context {
+func (s *CubexApplication) GetGrpcContext() context.Context {
 	md := metadata.Pairs(
 		keys.GetAppIDKey(), s.appDefinition.AppID,
 		keys.GetAppVendorKey(), s.appDefinition.Vendor,
