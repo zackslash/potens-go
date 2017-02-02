@@ -13,8 +13,9 @@ type Result struct {
 
 // KeyValuePair item
 type KeyValuePair struct {
-	Key   string
-	Value string
+	Key      string
+	Value    string
+	property string
 }
 
 // ResultItem is a single query result
@@ -50,10 +51,14 @@ func (e *Entity) GetCounter(property string) int {
 
 // GetSet returns property set data
 func (e *Entity) GetSet(property string) []string {
-	dat := e.get(property, SetType)
-	lst := []string{}
-	json.Unmarshal([]byte(dat), &lst)
-	return lst
+	dat := e.getCollection(property, SetType)
+	lstOut := []string{}
+	for _, v := range dat {
+		lst := []string{}
+		json.Unmarshal([]byte(v), &lst)
+		lstOut = append(lstOut, lst...)
+	}
+	return lstOut
 }
 
 // GetMeta returns property meta data
@@ -63,10 +68,14 @@ func (e *Entity) GetMeta(property string) string {
 
 // GetList returns property list data
 func (e *Entity) GetList(listName string) []KeyValuePair {
-	dat := e.get(listName, ListType)
-	lst := []KeyValuePair{}
-	json.Unmarshal([]byte(dat), &lst)
-	return lst
+	dat := e.getCollection(listName, ListType)
+	lstOut := []KeyValuePair{}
+	for _, v := range dat {
+		lst := []KeyValuePair{}
+		json.Unmarshal([]byte(v), &lst)
+		lstOut = append(lstOut, lst...)
+	}
+	return lstOut
 }
 
 // Get returns property data for type
@@ -80,6 +89,19 @@ func (e *Entity) get(property string, ptype PropertyType) string {
 			}
 		}
 	}
+	return res
+}
 
+// Get returns property collection data for type
+func (e *Entity) getCollection(property string, ptype PropertyType) []string {
+	res := []string{}
+	p := e.result.Items[fmt.Sprintf("%s_%d", property, ptype)]
+	if p != nil {
+		for _, d := range p {
+			if d.Type == ptype {
+				res = append(res, d.Value)
+			}
+		}
+	}
 	return res
 }

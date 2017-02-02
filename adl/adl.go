@@ -167,7 +167,7 @@ func retrieve(e *Entity) (Result, error) {
 				Type:     ListType,
 			}
 
-			ret[fmt.Sprintf("%s_%d", lp.Property, ListType)] = []ResultItem{ri}
+			ret[fmt.Sprintf("%s_%d", lp.Property, ListType)] = append(ret[fmt.Sprintf("%s_%d", lp.Property, ListType)], ri)
 		}
 	}
 
